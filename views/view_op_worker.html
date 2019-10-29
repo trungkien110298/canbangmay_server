@@ -34,32 +34,15 @@
 
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script>
-    function insertTaskForm() {
-      numTask = document.getElementById("numTask").value;
-      var block_to_insert;
-      var container_block;
 
-      block_to_insert = document.createElement('div');
-      block_to_insert.innerHTML = "";
-      for (i = 0; i < numTask; i++) {
-        block_to_insert.innerHTML += '<div class="ln_solid"></div>'
-        block_to_insert.innerHTML += document.getElementById('divInsert').innerHTML
-      }
 
-      container_block = document.getElementById('listTask');
-      container_block.appendChild(block_to_insert);
-      document.getElementById('remain').style = ""
-    }
-
-  </script>
   <script>
     function insertRelaForm() {
       var block_to_insert;
       var container_block;
 
       block_to_insert = document.createElement('div');
-      block_to_insert.innerHTML = document.getElementById('rela').innerHTML;
+      block_to_insert.innerHTML = document.getElementById('add-rela').innerHTML;
 
       container_block = document.getElementById('remain_rela');
       container_block.appendChild(block_to_insert);
@@ -73,8 +56,6 @@
   <div class="container body">
     <div class="main_container">
 
-
-
       <div class="col-md-3 left_col">
         <div class="left_col scroll-view">
           <div class="navbar nav_title" style="border: 0;">
@@ -86,7 +67,7 @@
           <!-- menu profile quick info -->
           <div class="profile clearfix">
             <div class="profile_pic">
-              <img src="../public/images/img.jpg" alt="..." class="img-circle profile_img">
+              <img src="../images/img.jpg" alt="..." class="img-circle profile_img">
             </div>
             <div class="profile_info">
               <span>Welcome,</span>
@@ -171,187 +152,231 @@
 
       <!-- page content -->
       <div class="right_col" role="main">
-        <div class="">
-          <div class="clearfix"></div>
-          <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-              <div class="x_panel">
+        <div class="clearfix"></div>
+        <div class="row">
+          <div class="col-md-12 col-sm-12 col-xs-12">
 
-                <div class="x_title">
-                  <h2>Tối ưu số lượng công nhân</h2>
-                  <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="close-link"><i class="fa fa-close"></i></a>
-                    </li>
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                    </li>
-                  </ul>
-                  <div class="clearfix"></div>
-                </div>
+            <!-- Nguyên công công nghệ -->
+            <div class="x_panel">
 
-                <div class="x_content">
+              <div class="x_title">
+                <h2>Nguyên công công nghệ</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="close-link"><i class="fa fa-close"></i></a>
+                  </li>
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                  </li>
+                </ul>
+                <div class="clearfix"></div>
+              </div>
 
-                  <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
-                    <div>
-                      <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Số nguyên công công
-                          nghệ
-                          <span class="required">*</span>
-                        </label>
+              <div class="x_content">
 
+                <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                  <div class="container">
+                    <div class="row clearfix">
+                      <div class="col-md-12 table-responsive">
+                        <table class="table table-sortable table-striped jambo_table bulk_action" id="tab_logic">
+                          <thead>
+                            <tr>
+                              <th class="text-center col-md-3">
+                                Tên nguyên công công nghệ
+                              </th>
+                              <th class="text-center col-md-2">
+                                Thời gian (s)
+                              </th>
+                              <th class="text-center col-md-2">
+                                Thiết bị
+                              </th>
+                              <th class="text-center col-md-2">
+                                Loại NCCN
+                              </th>
+                              <th class="text-center col-md-2">
+                                Bậc kỹ thuật
+                              </th>
+                              <th class="text-center col-md-1">
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr id='addr0' data-id="0" class="hidden">
+                              <td data-name="name">
+                                <input type="text" name='name0' placeholder='Nguyên công công nghệ'
+                                  class="form-control" />
+                              </td>
+                              <td data-name="mail">
+                                <input type="text" name='mail0' placeholder='Thời gian' class="form-control" />
+                              </td>
+                              <td data-name="desc">
+                                <select name="sel0" class="col-md-12 select2_group form-control">
+                                  <option value="1">Thiết bị 1</option>
+                                  <option value="1">Thiết bị 2</option>
+                                  <option value="1">Thiết bị 3</option>
+                                </select>
+                              </td>
+                              <td data-name="sel">
+                                <select name="sel0" class="col-md-12 select2_group form-control">
+                                  <option value="1">Loại 1</option>
+                                  <option value="1">Loại 2</option>
+                                  <option value="1">Loại 3</option>
+                                </select>
+                              </td>
+                              <td data-name="sel">
+                                <select name="sel0" class="col-md-12 select2_group form-control">
 
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                          <input type="text" id="numTask" required="required" class="form-control col-md-7 col-xs-12">
-                        </div>
-                        <button class="btn btn-primary" type="button" onclick="insertTaskForm()">OK</button>
+                                  <option value="1">Bậc 1</option>
+                                  <option value="1">Bậc 2</option>
+                                  <option value="1">Bậc 3</option>
+                                  <option value="1">Bậc 4</option>
+                                  <option value="1">Bậc 5</option>
+                                </select>
+                              </td>
+                              <td data-name="del">
+                                <button name="del0" class='btn btn-danger row-remove'> Xóa</button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </div>
+                    <a id="add_row" class="btn btn-primary float-right">Thêm</a>
+                  </div>
 
-
-                    <table class="table table-striped jambo_table bulk_action">
-                      <thead class="thead-dark">
-                        <tr>
-                          <th class="col-md-3">Tên nguyên công công nghệ</th>
-                          <th class="col-md-2">Thời gian (s)</th>
-                          <th class="col-md-2">Thiết bị</th>
-                          <th class="col-md-2">Loại NCCN</th>
-                          <th class="col-md-2">Bậc kỹ thuật</th>
-                          
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>
-                            <div class="col-md-12 col-sm-12 col-xs-12">
-                              <input type="text" id="numTask" class="form-control col-md-7 col-xs-12">
-                            </div>
-                          </td>
-                          <td>
-                              <div class="col-md-6 col-sm-12 col-xs-12">
-                                  <input type="text" id="numTask" class="form-control col-md-7 col-xs-12">
-                                </div>
-                          </td>
-                          <td>
-                              <div class="col-md-6 col-sm-12 col-xs-12">
-                                  <input type="text" id="numTask" class="form-control col-md-7 col-xs-12">
-                                </div>
-                          </td>
-                          <td>
-                              <div class="col-md-6 col-sm-12 col-xs-12">
-                                  <input type="text" id="numTask" class="form-control col-md-7 col-xs-12">
-                                </div>
-                          </td>
-                          <td>
-                              <div class="col-md-6 col-sm-12 col-xs-12">
-                                  <input type="text" id="numTask" class="form-control col-md-7 col-xs-12">
-                                </div>
-                          </td>
-                        </tr>
-
-                      </tbody>
-                    </table>
-                    <br />
-                    <div id="divInsert" style="display: none;">
-                      <div>
-                        <div class="form-group">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Tên nguyên công
-                            công nghệ
-                            <span class="required">*</span>
-                          </label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="numTask" class="form-control col-md-7 col-xs-12">
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Thời gian
-                            <span class="required">*</span>
-                          </label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="numTask" class="form-control col-md-7 col-xs-12">
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Thiết bị
-                            <span class="required">*</span>
-                          </label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="numTask" class="form-control col-md-7 col-xs-12">
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Loại
-                            <span class="required">*</span>
-                          </label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="numTask" class="form-control col-md-7 col-xs-12">
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Bậc kĩ thuật
-                            <span class="required">*</span>
-                          </label>
-                          <div class="radio">
-                            <label>
-                              <input type="radio" class="flat col-md-12" name="iCheck"> Checked
-                            </label>
-                          </div>
-                          <div class="radio">
-                            <label>
-                              <input type="radio" class="flat" name="iCheck"> Unchecked
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div id="listTask">
-                    </div>
-                    <div id="remain" style="display: none;">
-                      <div class="ln_solid"></div>
-                      <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Sai lệch giới hạn
-                          nhịp
-                          <span class="required">*</span>
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                          <input type="text" id="numTask" class="form-control col-md-7 col-xs-12">
-                        </div>
-                      </div>
-                      <div class="ln_solid"></div>
-                      <div id="rela">
-                        <div class="form-group">
-                          <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Ràng buộc trình tự
-                            <span class="required">*</span>
-                          </label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="numTask" class="form-control col-md-7 col-xs-12">
-                          </div>
-                        </div>
-                      </div>
-                      <div id="remain_rela"></div>
-
-                      <button class="btn btn-primary" type="button" onclick="insertRelaForm()">Add</button>
-
-                    </div>
-
-
-                    <div class="ln_solid"></div>
-
-
-
-                    <div class="form-group">
-                      <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
-                        <button class="btn btn-primary" type="button">Cancel</button>
-                        <button class="btn btn-primary" type="reset">Reset</button>
-                        <button type="submit" class="btn btn-success">Submit</button>
-                      </div>
-                    </div>
-
-                  </form>
-                </div>
+                </form>
               </div>
             </div>
+
+            <!-- Ràng buộc trình tự -->
+            <div class="x_panel">
+              <div class="x_title">
+                <h2>Ràng buộc trình tự</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="close-link"><i class="fa fa-close"></i></a>
+                  </li>
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                  </li>
+                </ul>
+                <div class="clearfix"></div>
+              </div>
+
+              <div class="x_content">
+
+                <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                  <div class="container">
+                    <div class="row clearfix">
+                      <div class="col-md-6 col-md-offset-3 table-responsive">
+                        <table class="table table-sortable table-striped jambo_table bulk_action" id="tab_logic2">
+                          <thead>
+                            <tr>
+                              <th class="text-center col-md-5">
+                                Nguyên công công nghệ thực hiện trước
+                              </th>
+                              <th class="text-center col-md-5">
+                                Nguyên công công nghệ thực hiện sau
+                              </th>
+                              <th class="text-center col-md-1">
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr id='addr0' data-id="0" class="hidden">
+                              <td data-name="name">
+                                <input type="text" name='name0' class="form-control" />
+                              </td>
+                              <td data-name="mail">
+                                <input type="text" name='mail0' class="form-control" />
+                              </td>
+                              <td data-name="del">
+                                <button name="del0" class='btn btn-danger row-remove'> Xóa</button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <a id="add_row2" class="btn btn-primary float-right col-md-offset-3">Thêm</a>
+                  </div>
+
+                </form>
+
+              </div>
+            </div>
+
+            <!-- Thông tin còn lại -->
+            <div class="x_panel">
+              <div class="x_title">
+                <h2>Nhịp dây chuyền</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="close-link"><i class="fa fa-close"></i></a>
+                  </li>
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                  </li>
+                </ul>
+                <div class="clearfix"></div>
+              </div>
+
+              <div class="x_content">
+
+                <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Sai lệch giới hạn
+                      nhịp
+                      <span class="required">*</span>
+                    </label>
+                    <div class="col-md-5">
+                      <select name="sel0" class="select2_group form-control">
+                        <option value="" selected disabled hidden>Choose here</option>
+                        <option value="1">5%</option>
+                        <option value="1">10%</option>
+                        <option value="1">15%</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Thời gian làm việc 1 ngày
+                      <span class="required">*</span>
+                    </label>
+                    <div class="col-md-5 col-sm-6 col-xs-12">
+                      <input type="text" id="numTask" class="form-control col-md-6 col-xs-12">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Công suất của dây chuyền
+                      <span class="required">*</span>
+                    </label>
+                    <div class="col-md-5 col-sm-6 col-xs-12">
+                      <input type="text" id="numTask" class="form-control col-md-6 col-xs-12">
+                    </div>
+                  </div>
+
+
+
+                </form>
+              </div>
+            </div>
+
+           
+            <div class="form-group col-md-12" style="padding-bottom: 3rem; padding-top: 2rem;">
+              <div class="col-md-6 col-md-offset-3">
+                <div class="col-md-12">
+                    <button class="btn btn-primary col-md-3" type="button">Reset</button>
+                    <button class="btn btn-primary col-md-3" type="reset">Save</button>
+                    <button type="submit" class="btn btn-success col-md-3" href='/api-worker'>Submit</button>
+                </div>
+                
+              </div>
+            </div>
+            
+
           </div>
         </div>
+
       </div>
+
+
+      
+
       <!-- /page content -->
 
       <!-- footer content -->
@@ -400,6 +425,8 @@
   <script src="../vendors/starrr/dist/starrr.js"></script>
   <!-- Custom Theme Scripts -->
   <script src="../build/js/custom.min.js"></script>
+
+  <script src="../javascript/form.js"></script>
 
 </body>
 
