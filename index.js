@@ -22,6 +22,8 @@ app.get('/', function(req, res){
     return res.render('view_op_worker.html')
 });
 
+var api_worker = require('./routes/api-worker')
+app.use('/api', api_worker);
 
 
 // var upload = multer({ storage: storage }).single('uploadfile');

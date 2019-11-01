@@ -1,10 +1,10 @@
 $(document).ready(function () {
-    $("#add_row").on("click", function () {
+    $("#add_NCCN").on("click", function () {
         // Dynamic Rows Code
 
         // Get max row id and set new id
         var newid = 0;
-        $.each($("#tab_logic tr"), function () {
+        $.each($("#table_NCCN tr"), function () {
             if (parseInt($(this).data("id")) > newid) {
                 newid = parseInt($(this).data("id"));
             }
@@ -17,7 +17,7 @@ $(document).ready(function () {
         });
 
         // loop through each td and create new elements with name of newid
-        $.each($("#tab_logic tbody tr:nth(0) td"), function () {
+        $.each($("#table_NCCN tbody tr:nth(0) td"), function () {
             var td;
             var cur_td = $(this);
 
@@ -30,39 +30,32 @@ $(document).ready(function () {
                 });
 
                 var c = $(cur_td).find($(children[0]).prop('tagName')).clone().val("");
-                c.attr("name", $(cur_td).data("name") + newid);
+                c.attr("name", $(cur_td).data("name"));
                 c.appendTo($(td));
                 td.appendTo($(tr));
             } else {
                 td = $("<td></td>", {
-                    'text': $('#tab_logic tr').length
+                    'text': $('#table_NCCN tr').length
                 }).appendTo($(tr));
             }
         });
 
-        // add delete button and td
-        /*
-        $("<td></td>").append(
-            $("<button class='btn btn-danger glyphicon glyphicon-remove row-remove'></button>")
-                .click(function() {
-                    $(this).closest("tr").remove();
-                })
-        ).appendTo($(tr));
-        */
+
 
         // add the new row
-        $(tr).appendTo($('#tab_logic'));
+        $(tr).appendTo($('#table_NCCN'));
 
         $(tr).find("td button.row-remove").on("click", function () {
             $(this).closest("tr").remove();
         });
     });
-    $("#add_row2").on("click", function () {
+
+    $("#add_RBTT").on("click", function () {
         // Dynamic Rows Code
 
         // Get max row id and set new id
         var newid = 0;
-        $.each($("#tab_logic2 tr"), function () {
+        $.each($("#table_RBTT tr"), function () {
             if (parseInt($(this).data("id")) > newid) {
                 newid = parseInt($(this).data("id"));
             }
@@ -75,7 +68,7 @@ $(document).ready(function () {
         });
 
         // loop through each td and create new elements with name of newid
-        $.each($("#tab_logic2 tbody tr:nth(0) td"), function () {
+        $.each($("#table_RBTT tbody tr:nth(0) td"), function () {
             var td;
             var cur_td = $(this);
 
@@ -88,28 +81,19 @@ $(document).ready(function () {
                 });
 
                 var c = $(cur_td).find($(children[0]).prop('tagName')).clone().val("");
-                c.attr("name", $(cur_td).data("name") + newid);
+                c.attr("name", $(cur_td).data("name"));
                 c.appendTo($(td));
                 td.appendTo($(tr));
             } else {
                 td = $("<td></td>", {
-                    'text': $('#tab_logic2 tr').length
+                    'text': $('#table_RBTT tr').length
                 }).appendTo($(tr));
             }
         });
 
-        // add delete button and td
-        /*
-        $("<td></td>").append(
-            $("<button class='btn btn-danger glyphicon glyphicon-remove row-remove'></button>")
-                .click(function() {
-                    $(this).closest("tr").remove();
-                })
-        ).appendTo($(tr));
-        */
 
         // add the new row
-        $(tr).appendTo($('#tab_logic2'));
+        $(tr).appendTo($('#table_RBTT'));
 
         $(tr).find("td button.row-remove").on("click", function () {
             $(this).closest("tr").remove();
@@ -130,13 +114,51 @@ $(document).ready(function () {
         return $helper;
     };
 
-    // $(".table-sortable tbody").sortable({
-    //     helper: fixHelperModified
-    // }).disableSelection();
 
-    // $(".table-sortable thead").disableSelection();
+    $("#add_NCCN").trigger("click");
+    $("#add_RBTT").trigger("click");
+
+    $("#submit").click(function () {
+        time = $("#time").val()
+        deviation = $("#deviation").val()
+        wattage = $("#wattage").val()
+        data = { "NCCN": [], "RBTT": [], "time": time, "deviation": deviation, "wattage": wattage }
+        $("#table_NCCN tbody tr").each(function () {
+            if (parseInt($(this).data("id")) > 0) {
+                name = $(this).find(':input[name = "name"]').val()
+                time = $(this).find(':input[name = "time"]').val()
+                device = $(this).find(':input[name = "device"]').val()
+                kind = $(this).find(':input[name = "kind"]').val()
+                level = $(this).find(':input[name = "level"]').val()
+                row = {
+                    "name": name,
+                    "time": time,
+                    "device": device,
+                    "kind": kind,
+                    "level": level
+                }
+                data["NCCN"].push(row)
+            }
+        });
+        $("#table_RBTT tbody tr").each(function () {
+            if (parseInt($(this).data("id")) > 0) {
+                NCCN_1 = $(this).find(':input[name = "NCCN-1"]').val()
+                NCCN_2 = $(this).find(':input[name = "NCCN-2"]').val()
+                row = {
+                    "nccn-1": NCCN_1,
+                    "nccn-2": NCCN_2
+                }
+                data["RBTT"].push(row)
+            }
+        });
+        $.ajax({
+            url: '/api/api-worker',
+            contentType: "application/json",
+            method: 'POST',
+            data: JSON.stringify(data),
+            dataType: 'json'  
+        })
+    });
 
 
-
-    $("#add_row").trigger("click");
 });
