@@ -1,7 +1,9 @@
 var express = require('express');
 var fs =require('fs');
-var api_worker = express.Router();
+var cmd=require('node-cmd');
 
+
+var api_worker = express.Router();
 
 api_worker.post('/api-worker', (req, res) => {
     NCCN = req.body.NCCN;
@@ -38,6 +40,15 @@ api_worker.post('/api-worker', (req, res) => {
         console.log("The file was saved!");
     }); 
 
+    cmd.get(
+        'cd controller && start Problem1.exe',
+        function(err, data, stderr){
+            console.log(data)
+            console.log(err);
+            console.log(stderr);
+        }
+    );
+    
     res.render('view_op_h.html')
 });
 

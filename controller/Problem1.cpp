@@ -31,7 +31,7 @@ task taskList[MAXN + 5];
 
 void readInput(){
     freopen("../.temp/test.txt", "r", stdin);
-
+    freopen("../.temp/output.txt", "w", stdout);
     cin >> N >> R;
     for(int i = 1; i <= N; i++){
         int ign;
