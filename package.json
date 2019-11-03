@@ -14,9 +14,10 @@
     "consolidate": "^0.15.1",
     "ejs": "^2.7.1",
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
     "mongoose": "^5.7.1",
+    "node-cmd": "^3.0.0",
     "path": "^0.12.7",
     "swig": "^1.4.2"
   }
-  
 }

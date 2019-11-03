@@ -200,11 +200,12 @@
                                 <input type="text" name='time' placeholder='Thời gian' class="form-control" />
                               </td>
                               <td data-name="device">
-                                <select name="device" class="col-md-12 select2_group form-control">
+                                <!-- <select name="device" class="col-md-12 select2_group form-control">
                                   <option value="1">Thiết bị 1</option>
                                   <option value="2">Thiết bị 2</option>
                                   <option value="3">Thiết bị 3</option>
-                                </select>
+                                </select> -->
+                                <input type="text" name='device' placeholder='Thiết bị' class="form-control" />
                               </td>
                               <td data-name="kind">
                                 <select name="kind" class="col-md-12 select2_group form-control">
@@ -286,7 +287,7 @@
                         </table>
                       </div>
                     </div>
-                    <div class="col-md-12" >
+                    <div class="col-md-12">
                       <a id="add_RBTT" class="btn btn-primary float-right col-md-offset-3">Thêm</a>
                     </div>
                   </div>
@@ -326,21 +327,43 @@
                       </select>
                     </div>
                   </div>
-                  <div class="form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Thời gian làm việc 1 ngày
-                      <span class="required">*</span>
-                    </label>
-                    <div class="col-md-5 col-sm-6 col-xs-12">
-                      <input type="text" id="time" class="form-control col-md-6 col-xs-12">
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label col-md-5 col-sm-3 col-xs-12" for="first-name"> Thời gian làm việc 1
+                        ngày
+                        <span class="required">*</span>
+                      </label>
+                      <div class="col-md-7 col-sm-6 col-xs-12">
+                        <input type="text" id="time" class="form-control col-md-6 col-xs-12">
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="control-label col-md-5 col-sm-3 col-xs-12" for="first-name"> Công suất của dây
+                        chuyền
+                        <span class="required">*</span>
+                      </label>
+                      <div class="col-md-7 col-sm-6 col-xs-12">
+                        <input type="text" id="wattage" class="form-control col-md-6 col-xs-12">
+                      </div>
                     </div>
                   </div>
-
-                  <div class="form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Công suất của dây chuyền
-                      <span class="required">*</span>
-                    </label>
-                    <div class="col-md-5 col-sm-6 col-xs-12">
-                      <input type="text" id="wattage" class="form-control col-md-6 col-xs-12">
+                  <div class="col-md-1 " style="padding-top: 2rem;text-align: right;">
+                    <div class="form-group">
+                      <label class="control-label col-md-12" style="text-align: right;">Hoặc
+                      </label>
+                      
+                    </div>
+                  </div>
+                  <div class="col-md-5" style="padding-top: 2rem;">
+                    <div class="form-group">
+                      <label class="control-label col-md-5 col-sm-3 col-xs-12" for="first-name"> Nhịp dây chuyền R
+                        <span class="required">*</span>
+                      </label>
+                      <div class="col-md-7 col-sm-6 col-xs-12">
+                        <input type="text" id="R" class="form-control col-md-6 col-xs-12">
+                      </div>
                     </div>
                   </div>
 
@@ -354,21 +377,21 @@
             <div class="form-group col-md-12" style="padding-bottom: 3rem; padding-top: 2rem;">
               <div class="col-md-6 col-md-offset-3">
                 <div class="col-md-12">
-                    <button class="btn btn-primary col-md-3" type="button">Reset</button>
-                    <button class="btn btn-primary col-md-3" type="reset">Save</button>
-                    <button id ="submit" type="submit" class="btn btn-success col-md-3">Submit</button>
+                  <button class="btn btn-primary col-md-3" type="button">Reset</button>
+                  <button class="btn btn-primary col-md-3" type="reset">Save</button>
+                  <button id="submit" type="submit" class="btn btn-success col-md-3">Submit</button>
                 </div>
-                
+
               </div>
             </div>
-            
+
 
           </div>
         </div>
       </div>
       <!-- /page content -->
 
-      
+
       <!-- footer content -->
       <footer>
         <div class="pull-right">

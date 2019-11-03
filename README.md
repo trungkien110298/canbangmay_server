@@ -19,3 +19,6 @@ thì nghĩa là nó vẫn chưa được nhìn nhận, bạn cần điều chỉ
 
 ### Chi tiết hướng dẫn
 * Xem video trong [link](https://www.youtube.com/watch?v=TOeKtN6Vir4&fbclid=IwAR3ddTY1_qSMtxBMa4HfTLrEstaKwS0UrMpm_JI1XxhGD9EKQeM0GqQUUJI) 
+
+* Với thư viện bits/stdc++ cần thêm -lstdc++. Ví dụ
+gcc Problem1.cpp -lstdc++ -o Problem1.exe 

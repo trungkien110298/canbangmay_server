@@ -122,7 +122,8 @@ $(document).ready(function () {
         time = $("#time").val()
         deviation = $("#deviation").val()
         wattage = $("#wattage").val()
-        data = { "NCCN": [], "RBTT": [], "time": time, "deviation": deviation, "wattage": wattage }
+        r = $("#R").val()
+        data = { "NCCN": [], "RBTT": [], "time": time, "deviation": deviation, "wattage": wattage, "R": r }
         $("#table_NCCN tbody tr").each(function () {
             if (parseInt($(this).data("id")) > 0) {
                 name = $(this).find(':input[name = "name"]').val()
@@ -145,8 +146,8 @@ $(document).ready(function () {
                 NCCN_1 = $(this).find(':input[name = "NCCN-1"]').val()
                 NCCN_2 = $(this).find(':input[name = "NCCN-2"]').val()
                 row = {
-                    "nccn-1": NCCN_1,
-                    "nccn-2": NCCN_2
+                    "nccn_1": NCCN_1,
+                    "nccn_2": NCCN_2
                 }
                 data["RBTT"].push(row)
             }
