@@ -2,7 +2,7 @@
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
-
+var cons = require('consolidate');
 
 
 
@@ -10,8 +10,8 @@ var bodyParser = require('body-parser');
 var app = express();
 
 // View engine setup
-
-app.set("view engine", "ejs");
+app.engine('html', cons.swig)
+app.set("view engine", "html");
 app.set("views", "./views");
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -19,9 +19,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.get('/', function(req, res){
-    return res.render('view_op_worker.ejs')
+    return res.render('view_op_worker.html')
 });
 
+var api_worker = require('./routes/api-worker')
+app.use('/api', api_worker);
 
 
 // var upload = multer({ storage: storage }).single('uploadfile');
