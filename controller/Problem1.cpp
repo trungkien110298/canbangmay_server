@@ -486,38 +486,44 @@ void printSolution(solution finalRes){
         sort(finalRes.groups[i].begin(), finalRes.groups[i].end());
     sort(finalRes.groups.begin(), finalRes.groups.end());
 
-    cout << (int)finalRes.groups.size() << " groups" << endl;
+    cout <<"{\"Numgroups\": " << (int)finalRes.groups.size() << ", ";
+    cout <<"\"Groups\":[";
     for(int i = 0; i < (int)finalRes.groups.size(); i++){
-        cout << "Group " << i + 1 << ":";
+        cout << "{\"id\": " << i + 1 << ", ";
+        cout << "\"tasks\":[";
         for(int j = 0; j < (int)finalRes.groups[i].size(); j++){
-            cout << " " << finalRes.groups[i][j];
+            int idtask = finalRes.groups[i][j];
+            cout << "{\"task\":" << idtask << ", ";
+            cout << "\"NCCN\": \"" << taskList[idtask].machine << "\", ";
+            cout << "\"machine\": \"" << taskList[idtask].machine << "\", ";
+            cout << "\"ti\": " << taskList[idtask].worktime << "}";
+            if (j < (int)finalRes.groups[i].size() - 1) cout <<",";
         }
 
         groupStat stat = calGroupStat(finalRes.groups[i]);
         totalWorkers += stat.workers;
         balancedGroups += stat.balanced;
         totalWorkerSaved += stat.workerSaved;
-        cout << " -- W: " << stat.workers << ", S: " << stat.workerSaved << ", T: " << stat.TimeWork <<", Nc: " << stat.Rj ;
-        if(stat.balanced == 1) cout << " YES" << endl; else cout << " NO" << endl;
+        cout << "],\"level\": \"" << "\", ";
+        cout << "\"total_time\": " << stat.TimeWork << ", ";
+        cout << "\"workers\": " << stat.workers << ", ";
+        cout << "\"Rj\": " << stat.Rj << ", ";
+        //cout << " -- W: " << stat.workers << ", S: " << stat.workerSaved << ", T: " << stat.TimeWork <<", Nc: " << stat.Rj ;
+        cout << "\"balance\": \"";
+        if(stat.balanced == 1) cout << " Yes"; else cout << " No" ;
+        cout << "\"}";
+        if(i < (int)finalRes.groups.size() - 1) cout <<", ";
     }
 
-    cout << totalWorkers << " workers, " << totalWorkerSaved << " saved, ";
-    cout << 100.0 * (double)balancedGroups / (double)finalRes.groups.size() << "%" << endl;
+    cout <<"], \"total_worker\": " <<totalWorkers << ",  \"total_save\": " << totalWorkerSaved << ",";
+    cout <<"\"H\": " << 100.0 * (double)balancedGroups / (double)finalRes.groups.size() << "}" << endl;
 }
 
 int main(){
     readInput();
     clock_t start = clock();
     findSolution();
-    cout << "\nPhuong an co so: \n";
-    printSolution(finalRes);
     tuneSolution();
-    cout << "\nKet qua cuoi cung cua R = " << R << " : \n" ;
     printSolution(finalRes);
-    clock_t finish = clock();
-	double duration = (double)(finish - start) / CLOCKS_PER_SEC;
-	cout <<"\n\n\n";
-	printf("Thoi gian thuc thi: %.2lf", duration);
-	system("pause");
     return 0;
 }
