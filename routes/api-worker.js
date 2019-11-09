@@ -49,7 +49,8 @@ api_worker.post('/api-worker', (req, res) => {
         }
     );
     
-    res.render('view_op_h.html')
+    var text = fs.readFileSync("./.temp/output.txt");
+    res.send(text);
 });
 
 module.exports = api_worker;

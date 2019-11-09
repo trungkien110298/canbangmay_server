@@ -50,7 +50,7 @@
 
           <div class="clearfix"></div>
 
-          <!-- menu profile quick info -->
+          <!-- menu profile quick info
           <div class="profile clearfix">
             <div class="profile_pic">
               <img src="./images/img.jpg" alt="..." class="img-circle profile_img">
@@ -59,7 +59,7 @@
               <span>Welcome,</span>
               <h2>John Doe</h2>
             </div>
-          </div>
+          </div> -->
           <!-- /menu profile quick info -->
 
           <br />
@@ -69,17 +69,13 @@
             <div class="menu_section">
               <h3>General</h3>
               <ul class="nav side-menu">
-                <li><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
-                  <ul class="nav child_menu">
-                    <li><a href="/">Tối ưu số lượng công nhân</a></li>
-                    <li><a href="/">Tối ưu hiệu quả cân bằng</a></li>
-                  </ul>
+                <li><a><i class="fa fa-home"></i> Home</a>
                 </li>
 
                 <li><a><i class="fa fa-cog"></i> Tối ưu <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
-                    <li><a href="/">Tối ưu số lượng công nhân</a></li>
-                    <li><a href="/">Tối ưu hiệu quả cân bằng</a></li>
+                    <li><a href="/">Cân bằng dây chuyền theo công suất</a></li>
+                    <li><a href="/">Cân bằng dây chuyền theo số lượng công nhân</a></li>
                   </ul>
                 </li>
               </ul>
@@ -113,11 +109,11 @@
       <div class="top_nav">
         <div class="nav_menu">
           <nav>
-            <div class="nav toggle">
+            <div class="nav toggle" style="padding-bottom: 1rem;">
               <a id="menu_toggle"><i class="fa fa-bars"></i></a>
             </div>
 
-            <ul class="nav navbar-nav navbar-right">
+            <!-- <ul class="nav navbar-nav navbar-right">
               <li class="">
                 <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
                   aria-expanded="false">
@@ -136,7 +132,7 @@
                   <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
                 </ul>
               </li>
-            </ul>
+            </ul> -->
           </nav>
         </div>
       </div>
@@ -149,6 +145,124 @@
         <div class="row">
           <div class="col-md-12 col-sm-12 col-xs-12">
 
+
+            <div class="x_panel">
+              <div class="x_title">
+                <h2>Mô tả</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                  <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                    </li>
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                  </ul>
+                </ul>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content">
+                <form class="form-horizontal form-label-left" style="padding-bottom: 2rem;">
+                  <div class="form-group">
+                    <label class="control-label col-md-3"> Mã sản phẩm
+                    </label>
+                    <div class="col-md-7">
+                      <input type="text" id="time" class="form-control">
+                    </div>
+                  </div>
+                </form>
+
+
+
+
+                <div id="alerts"></div>
+                <div class="btn-toolbar editor col-md-12" data-role="editor-toolbar" data-target="#editor-one">
+                  <div class="btn-group">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i class="fa fa-font"></i><b
+                        class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    </ul>
+                  </div>
+
+                  <div class="btn-group">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i
+                        class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                      <li>
+                        <a data-edit="fontSize 5">
+                          <p style="font-size:17px">Huge</p>
+                        </a>
+                      </li>
+                      <li>
+                        <a data-edit="fontSize 3">
+                          <p style="font-size:14px">Normal</p>
+                        </a>
+                      </li>
+                      <li>
+                        <a data-edit="fontSize 1">
+                          <p style="font-size:11px">Small</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div class="btn-group">
+                    <a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a>
+                    <a class="btn" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></a>
+                    <a class="btn" data-edit="strikethrough" title="Strikethrough"><i
+                        class="fa fa-strikethrough"></i></a>
+                    <a class="btn" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i
+                        class="fa fa-underline"></i></a>
+                  </div>
+
+                  <div class="btn-group">
+                    <a class="btn" data-edit="insertunorderedlist" title="Bullet list"><i class="fa fa-list-ul"></i></a>
+                    <a class="btn" data-edit="insertorderedlist" title="Number list"><i class="fa fa-list-ol"></i></a>
+                    <a class="btn" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i
+                        class="fa fa-dedent"></i></a>
+                    <a class="btn" data-edit="indent" title="Indent (Tab)"><i class="fa fa-indent"></i></a>
+                  </div>
+
+                  <div class="btn-group">
+                    <a class="btn" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i
+                        class="fa fa-align-left"></i></a>
+                    <a class="btn" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i
+                        class="fa fa-align-center"></i></a>
+                    <a class="btn" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i
+                        class="fa fa-align-right"></i></a>
+                    <a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i
+                        class="fa fa-align-justify"></i></a>
+                  </div>
+
+                  <div class="btn-group">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i
+                        class="fa fa-link"></i></a>
+                    <div class="dropdown-menu input-append">
+                      <input class="span2" placeholder="URL" type="text" data-edit="createLink" />
+                      <button class="btn" type="button">Add</button>
+                    </div>
+                    <a class="btn" data-edit="unlink" title="Remove Hyperlink"><i class="fa fa-cut"></i></a>
+                  </div>
+
+                  <div class="btn-group">
+                    <a class="btn" title="Insert picture (or just drag & drop)" id="pictureBtn"><i
+                        class="fa fa-picture-o"></i></a>
+                    <input type="file" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" />
+                  </div>
+
+                  <div class="btn-group">
+                    <a class="btn" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="fa fa-undo"></i></a>
+                    <a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="fa fa-repeat"></i></a>
+                  </div>
+                </div>
+
+                <div id="editor-one" class="editor-wrapper"></div>
+
+                <!-- <textarea name="descr" id="descr" style="display:none;"></textarea> -->
+
+                <br />
+
+                <div class="ln_solid"></div>
+              </div>
+            </div>
             <!-- Nguyên công công nghệ -->
             <div class="x_panel">
 
@@ -171,8 +285,11 @@
                         <table class="table table-sortable table-striped jambo_table bulk_action" id="table_NCCN">
                           <thead>
                             <tr>
-                              <th class="text-center col-md-3">
-                                Tên nguyên công công nghệ
+                              <th class="text-center col-md-1">
+                                STT
+                              </th>
+                              <th class="text-center col-md-2">
+                                Tên NCCN
                               </th>
                               <th class="text-center col-md-2">
                                 Thời gian (s)
@@ -192,6 +309,9 @@
                           </thead>
                           <tbody>
                             <tr id='addr0' data-id="0" class="hidden">
+                              <td data-name="name">
+                                <h4 class="text-center">0</h4>
+                              </td>
                               <td data-name="name">
                                 <input type="text" name='name' placeholder='Nguyên công công nghệ'
                                   class="form-control" />
@@ -242,7 +362,7 @@
             <!-- Ràng buộc trình tự -->
             <div class="x_panel">
               <div class="x_title">
-                <h2>Ràng buộc trình tự</h2>
+                <h2>Trình tự thực hiện các nguyên công</h2>
                 <ul class="nav navbar-right panel_toolbox">
                   <li><a class="close-link"><i class="fa fa-close"></i></a>
                   </li>
@@ -262,10 +382,10 @@
                           <thead>
                             <tr>
                               <th class="text-center col-md-5">
-                                Nguyên công công nghệ thực hiện trước
+                                NCCN thực hiện trước
                               </th>
                               <th class="text-center col-md-5">
-                                Nguyên công công nghệ thực hiện sau
+                                NCCN thực hiện sau
                               </th>
                               <th class="text-center col-md-1">
                               </th>
@@ -353,7 +473,7 @@
                     <div class="form-group">
                       <label class="control-label col-md-12" style="text-align: right;">Hoặc
                       </label>
-                      
+
                     </div>
                   </div>
                   <div class="col-md-5" style="padding-top: 2rem;">
@@ -385,6 +505,128 @@
               </div>
             </div>
 
+
+
+
+            <div class="x_panel">
+
+              <div class="x_title">
+                <h2>Kết quả</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="close-link"><i class="fa fa-close"></i></a>
+                  </li>
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                  </li>
+                </ul>
+                <div class="clearfix"></div>
+              </div>
+
+              <div class="x_content">
+                <form id="NCCN-result" data-parsley-validate class="form-horizontal form-label-left">
+                  <div class="container">
+                    <div class="row clearfix">
+                      <div class="col-md-12 table-responsive">
+                        <table class="table table-bordered table-sortable table-striped jambo_table bulk_action" id="table_NCCN">
+                          <thead>
+                            <tr>
+                              <th class="text-center col-md-1">
+                                STT
+                              </th>
+                              <th class="text-center col-md-1">
+                                STT NCCN
+                              </th>
+                              <th class="text-center col-md-3">
+                                Tên NCCN
+                              </th>
+                              <th class="text-center col-md-2">
+                                Thiết bị
+                              </th>
+                              <th class="text-center col-md-1">
+                                Thời gian NCCN
+                              </th>
+                              <th class="text-center col-md-1">
+                                Thời gian NCSX
+                              </th>
+                              <th class="text-center col-md-1">
+                                Bậc kỹ thuật
+                              </th>
+                              <th class="text-center col-md-1">
+                                Số lượng lao động
+                              </th>
+                              <th class="text-center col-md-1">
+                                Nhịp riêng
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr id='addr0' data-id="0" class="">
+                              <td rowspan="2"  style="vertical-align: middle"  data-name="name">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="time">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="device">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="kind">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="level">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="del">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="kind">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="level">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="del">
+                                <p class="text-center">1</p>
+                              </td>
+                            </tr>
+                            <tr id='addr0' data-id="0" class="">
+                              <td  data-name="name">
+                                <p class="text-center">1</p>
+                              </td>
+                              <!-- <td data-name="time">
+                                <p class="text-center">1</p>
+                              </td> -->
+                              <td data-name="device">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="kind">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="level">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="del">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="kind">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="level">
+                                <p class="text-center">1</p>
+                              </td>
+                              <td data-name="del">
+                                <p class="text-center">1</p>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </form>
+              </div>
+            </div>
 
           </div>
         </div>

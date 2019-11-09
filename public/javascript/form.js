@@ -4,12 +4,15 @@ $(document).ready(function () {
 
         // Get max row id and set new id
         var newid = 0;
+        
         $.each($("#table_NCCN tr"), function () {
             if (parseInt($(this).data("id")) > newid) {
                 newid = parseInt($(this).data("id"));
             }
         });
         newid++;
+        
+
 
         var tr = $("<tr></tr>", {
             id: "addr" + newid,
@@ -44,10 +47,21 @@ $(document).ready(function () {
 
         // add the new row
         $(tr).appendTo($('#table_NCCN'));
+        renumber();
 
         $(tr).find("td button.row-remove").on("click", function () {
             $(this).closest("tr").remove();
+            renumber();
         });
+        function renumber(){
+            var count = 0;
+            $.each($("#table_NCCN tr td h4"), function () {
+                $(this).html(count);
+                count++;
+            });
+        }
+
+
     });
 
     $("#add_RBTT").on("click", function () {
@@ -157,7 +171,10 @@ $(document).ready(function () {
             contentType: "application/json",
             method: 'POST',
             data: JSON.stringify(data),
-            dataType: 'json'  
+            dataType: 'json',
+            success: function(data){
+                alert(data["Numgroups"])
+            } 
         })
     });
 
