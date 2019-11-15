@@ -31,14 +31,13 @@ task taskList[MAXN + 5];
 
 void readInput(){
     freopen("../.temp/test.txt", "r", stdin);
-    freopen("../.temp/output.txt", "w", stdout);
+    freopen("../.temp/output.json", "w", stdout);
 
-    cin >> N >> R;
-    Rmax = R * 0.9;
-    Rmin = R * 1.15;
+    cin >> N >> R >> sailech;
+
     for(int i = 1; i <= N; i++){
         int ign;
-        cin >> ign >> taskList[i].machine >> ign >> taskList[i].worktime;
+        cin >> ign >> taskList[i].machine >> taskList[i].type >> taskList[i].worktime >> taskList[i].level ;
         taskList[i].status = 1;
     }
 
@@ -49,6 +48,7 @@ void readInput(){
         taskList[v].revEdge.push_back(u);
     }
 
+    /*
     for(int type = 1; type <= 3; type++){
         cin >> M;
         while(M--){
@@ -57,6 +57,29 @@ void readInput(){
                 if(taskList[i].machine == machine) taskList[i].type = type;
             }
         }
+    }*/
+
+    for(int i = 1; i <= N; i++){
+        cin.ignore();
+        string a;
+        getline(std::cin, a);
+        //int temp;
+        //cin >> temp;
+        taskList[i].machine_name = a;
+        //taskList[i].status = 1;
+    }
+
+    if (sailech == 1){
+        Rmax = R * 0.9;
+        Rmin = R * 1.15;
+    }
+    else if (sailech == 0){
+        Rmax = R * 0.85;
+        Rmin = R * 1.2;
+    }
+    else{
+        Rmax = R * 0.95;
+        Rmin = R * 1.1;
     }
 }
 
@@ -470,22 +493,24 @@ void printSolution(solution finalRes){
     cout <<"{\"Numgroups\": " << (int)finalRes.groups.size() << ", ";
     cout <<"\"Groups\":[";
     for(int i = 0; i < (int)finalRes.groups.size(); i++){
+        int levelmax = 0;
         cout << "{\"id\": " << i + 1 << ", ";
         cout << "\"tasks\":[";
         for(int j = 0; j < (int)finalRes.groups[i].size(); j++){
             int idtask = finalRes.groups[i][j];
             cout << "{\"task\":" << idtask << ", ";
             cout << "\"NCCN\": \"" << taskList[idtask].machine << "\", ";
-            cout << "\"machine\": \"" << taskList[idtask].machine << "\", ";
+            cout << "\"machine\": \"" << taskList[idtask].machine_name << "\", ";
             cout << "\"ti\": " << taskList[idtask].worktime << "}";
             if (j < (int)finalRes.groups[i].size() - 1) cout <<",";
+            if (levelmax < taskList[idtask].level) levelmax = taskList[idtask].level;
         }
 
         groupStat stat = calGroupStat(finalRes.groups[i]);
         totalWorkers += stat.workers;
         balancedGroups += stat.balanced;
         totalWorkerSaved += stat.workerSaved;
-        cout << "],\"level\": \"" << "\", ";
+        cout << "],\"level\": " <<levelmax << ", ";
         cout << "\"total_time\": " << stat.TimeWork << ", ";
         cout << "\"workers\": " << stat.workers << ", ";
         cout << "\"Rj\": " << stat.Rj << ", ";
