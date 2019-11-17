@@ -17,12 +17,12 @@ api_worker.post('/api-worker', (req, res) => {
     // R = parseInt(time)*parseInt(deviation);
     R = req.body.R;
 
-    str = num_NCCN.toString() + '\n' + R + '\n';
+    str = num_NCCN.toString() + '\n' + R + '\n' + deviation + '\n';
 
     for (i in NCCN) {
         nccn = NCCN[i];
         stt = parseInt(i) + 1;
-        str += stt.toString() + " " + nccn.name + " " + nccn.device + " " + nccn.kind + " " + nccn.time + "\n";
+        str += stt.toString() + " " + nccn.device + " " + nccn.kind + " " + nccn.time + " " + nccn.level +"\n";
     }
 
     str += num_RBTT.toString() + "\n"
@@ -30,18 +30,24 @@ api_worker.post('/api-worker', (req, res) => {
         rbtt = RBTT[i];
         str += rbtt.nccn_1 + " " + rbtt.nccn_2 + "\n";
     }
+    for (i in NCCN) {
+        nccn = NCCN[i];
+        str +=  nccn.name +"\n";
+    }
+
+
     var text = fs.readFileSync("./.temp/template.txt");
     str += text;
 
-    fs.writeFile("./.temp/test.txt", str, function (err) {
+    fs.writeFile("./.temp/input.txt", str, function (err) {
         if (err) {
             return console.log(err);
         }
-        console.log("The file was saved!");
+        console.log("The file input was saved!");
     });
 
     cmd.get(
-        'cd controller',// && start Problem1.exe',
+        'cd controller && start Problem1.exe',
         function (err, data, stderr) {
             if (err != null){
                 console.log(err);

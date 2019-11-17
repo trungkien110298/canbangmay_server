@@ -18,9 +18,11 @@ const int LOOPTIME = 20;
 
 struct task{
     string machine;
+    string machine_name;
     int type;
     double worktime;
     int status;
+    int level;
     vector<int> edge, originEdge;
     vector<int> revEdge;
 };
@@ -570,3 +572,4 @@ int main(){
     //system("pause");
     return 0;
 }
+
