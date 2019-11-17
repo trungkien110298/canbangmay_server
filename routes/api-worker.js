@@ -1,7 +1,7 @@
 var express = require('express');
 var fs = require('fs');
 var cmd = require('node-cmd');
-
+var os = require('os')
 
 var api_worker = express.Router();
 
@@ -46,8 +46,10 @@ api_worker.post('/api-worker', (req, res) => {
         console.log("The file input was saved!");
     });
 
+    if (os.platform() == "win32") command = 'cd controller && start Problem1.exe';
+    else command = 'cd controller &&  ./Problem1'
     cmd.get(
-        'cd controller && start Problem1.exe',
+        command,
         function (err, data, stderr) {
             if (err != null){
                 console.log(err);
