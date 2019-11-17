@@ -1,6 +1,6 @@
 var express = require('express');
-var fs =require('fs');
-var cmd=require('node-cmd');
+var fs = require('fs');
+var cmd = require('node-cmd');
 
 
 var api_worker = express.Router();
@@ -17,40 +17,42 @@ api_worker.post('/api-worker', (req, res) => {
     // R = parseInt(time)*parseInt(deviation);
     R = req.body.R;
 
-    str =   num_NCCN.toString() + '\n' + R + '\n';
+    str = num_NCCN.toString() + '\n' + R + '\n';
 
-    for (i in NCCN){
+    for (i in NCCN) {
         nccn = NCCN[i];
-        stt = parseInt(i)+1;
-        str += stt.toString() + " " + nccn.device + " " + nccn.kind + " " + nccn.time + "\n";
+        stt = parseInt(i) + 1;
+        str += stt.toString() + " " + nccn.name + " " + nccn.device + " " + nccn.kind + " " + nccn.time + "\n";
     }
 
     str += num_RBTT.toString() + "\n"
-    for (i in RBTT){
+    for (i in RBTT) {
         rbtt = RBTT[i];
         str += rbtt.nccn_1 + " " + rbtt.nccn_2 + "\n";
     }
     var text = fs.readFileSync("./.temp/template.txt");
     str += text;
 
-    fs.writeFile("./.temp/test.txt", str, function(err) {
-        if(err) {
+    fs.writeFile("./.temp/test.txt", str, function (err) {
+        if (err) {
             return console.log(err);
         }
         console.log("The file was saved!");
-    }); 
+    });
 
     cmd.get(
-        'cd controller && start Problem1.exe',
-        function(err, data, stderr){
-            console.log(data)
-            console.log(err);
-            console.log(stderr);
+        'cd controller',// && start Problem1.exe',
+        function (err, data, stderr) {
+            if (err != null){
+                console.log(err);
+            }
+            
+            var text = fs.readFileSync("./.temp/output.json");
+            res.send(text);
         }
     );
-    
-    var text = fs.readFileSync("./.temp/output.txt");
-    res.send(text);
+
+
 });
 
 module.exports = api_worker;

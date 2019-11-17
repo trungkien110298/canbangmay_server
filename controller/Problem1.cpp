@@ -30,8 +30,8 @@ double R, Rmax, Rmin;
 task taskList[MAXN + 5];
 
 void readInput(){
-    freopen("../.temp/test.txt", "r", stdin);
-    freopen("../.temp/output.txt", "w", stdout);
+    freopen("../.temp/input.txt", "r", stdin);
+    freopen("../.temp/output.json", "w", stdout);
 
     cin >> N >> R;
     Rmax = R * 0.9;
