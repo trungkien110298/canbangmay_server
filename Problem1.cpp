@@ -617,24 +617,18 @@ void line_arrangement(solution finalRes){
     cout << "], ";
     cout << "\"edge\":[";
 
-    int list[2][100];
-    int count = 0;
     for (int i = 1; i <= group_index; i++){
 
         for (int j = 0; j < groupList[i].edge.size(); j++){
-            list[0][count] = i;
-            list[1][count] = groupList[i].edge[j];
-            count++;
+            cout << "{\"u\": " << i << ",";
+            cout << "\"v\": " << groupList[i].edge[j];
+            //if (j < groupList[i].edge.size() - 1) cout << " ,";
+            cout << "}";
+            if (i < group_index || j < groupList[i].edge.size() - 1) cout << ",";
         }
-    }
 
-    for (int i =0; i < count; i++){
-        cout << "{\"u\": " << list[0][i] << ",";
-        cout << "\"v\": " << list[1][i];
-        cout << "}";
-        if (i < count-1) cout << ",";
+
     }
-    
     cout << "]";
 
 

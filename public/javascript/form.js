@@ -174,14 +174,25 @@ $(document).ready(function () {
             data: JSON.stringify(data),
             dataType: 'json',
             success: function (data) {
-                // alert(JSON.stringify(data))
-                $("#result-NCCN").css("display","")
+                alert(data)
+                $("#table-result tbody").html(" ");
+                $("#result-NCCN").css("display","");
+                $("#diagram-result").css("display","");
                 num_group = data.Numgroups;
+                alert(num_group)
                 groups = data.Groups;
+                var dataPoints = []
+                var dataPoints_rmax = [{x: 0}]
+                var dataPoints_rmin = [{x: 0}]
                 for (i in groups){
                     group = groups[i];
                     num_nccn = group.tasks.length;
                     rows = [];
+                    
+                    dataPoints.push({y: group.Rj})
+                    dataPoints_rmax.push({y: 60})
+                    dataPoints_rmin.push({y: 40})
+
                     for (j = 0; j < num_nccn; j++){
                         tr = $("<tr></tr>");
                         rows.push(tr);
@@ -199,7 +210,7 @@ $(document).ready(function () {
                         td_task = $("<td></td>").append($("<p></p>", { class: "text-center"}).html(nccn.task));
                         td_task.appendTo(rows[task]);
                         
-                        td_NCCN = $("<td></td>").append($("<p></p>", { class: "text-center"}).html(nccn.NCCN));
+                        td_NCCN = $("<td></td>").append($("<p></p>", { class: "text-center"}).html("A"));
                         td_NCCN.appendTo(rows[task]);
 
                         
@@ -236,7 +247,7 @@ $(document).ready(function () {
                     // alert(rows.length);
                     
                 }
-
+                showDiagram(dataPoints, dataPoints_rmax, dataPoints_rmin)
             }
         })
     });
@@ -246,98 +257,7 @@ $(document).ready(function () {
 
 
 
-window.onload = function () {
-
-    // Dữ liệu đầu vào là các Rj của các Group
-    var data_points = [{
-        y: 71
-    }, {
-        y: 55
-    }, {
-        y: 50
-    }, {
-        y: 65
-    }, {
-        y: 92
-    }, {
-        y: 68
-    }, {
-        y: 38
-    }, {
-        y: 71
-    }, {
-        y: 54
-    }, {
-        y: 60
-    }, {
-        y: 36
-    }, {
-        y: 49
-    }, {
-        y: 21
-    }]
-
-
-    // Đường thể hiện Rmax
-    var data_points_rmax = [{
-        x: 0,
-        y: 60
-    }, {
-        y: 60
-    }, {
-        y: 60
-    }, {
-        y: 60
-    }, {
-        y: 60
-    }, {
-        y: 60
-    }, {
-        y: 60
-    }, {
-        y: 60
-    }, {
-        y: 60
-    }, {
-        y: 60
-    }, {
-        y: 60
-    }, {
-        y: 60
-    }, {
-        y: 60
-    }]
-
-    // Đường thể hiện Rmin
-    var data_points_rmin = [{
-        x: 0,
-        y: 40
-    }, {
-        y: 40
-    }, {
-        y: 40
-    }, {
-        y: 40
-    }, {
-        y: 40
-    }, {
-        y: 40
-    }, {
-        y: 40
-    }, {
-        y: 40
-    }, {
-        y: 40
-    }, {
-        y: 40
-    }, {
-        y: 40
-    }, {
-        y: 40
-    }, {
-        y: 40
-    }]
-
+function showDiagram(data_points, data_points_rmax, data_points_rmin) {
     var chart = new CanvasJS.Chart("chartContainer", {
         animationEnabled: true,
         exportEnabled: true,

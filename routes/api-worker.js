@@ -6,6 +6,7 @@ var os = require('os')
 var api_worker = express.Router();
 
 api_worker.post('/api-worker', (req, res) => {
+    // console.log(req.body)
     NCCN = req.body.NCCN;
     RBTT = req.body.RBTT;
     time = req.body.time;
@@ -30,21 +31,13 @@ api_worker.post('/api-worker', (req, res) => {
         rbtt = RBTT[i];
         str += rbtt.nccn_1 + " " + rbtt.nccn_2 + "\n";
     }
-    for (i in NCCN) {
-        nccn = NCCN[i];
-        str +=  nccn.name +"\n";
-    }
+    
 
 
-    var text = fs.readFileSync("./.temp/template.txt");
-    str += text;
+    // var text = fs.readFileSync("./.temp/template.txt");
+    // str += text;
 
-    fs.writeFile("./.temp/input.txt", str, function (err) {
-        if (err) {
-            return console.log(err);
-        }
-        console.log("The file input was saved!");
-    });
+    fs.writeFileSync("./.temp/input.txt", str);
 
     if (os.platform() == "win32") command = 'cd controller && start Problem1.exe';
     else command = 'cd controller &&  ./Problem1'
@@ -56,7 +49,9 @@ api_worker.post('/api-worker', (req, res) => {
             }
             
             var text = fs.readFileSync("./.temp/output.json");
+            console.log(JSON.parse(text));
             res.send(text);
+            
         }
     );
 
