@@ -174,24 +174,23 @@ $(document).ready(function () {
             data: JSON.stringify(data),
             dataType: 'json',
             success: function (data) {
-                alert(data)
+                // alert(data)
                 $("#table-result tbody").html(" ");
                 $("#result-NCCN").css("display","");
                 $("#diagram-result").css("display","");
                 num_group = data.Numgroups;
-                alert(num_group)
+                // alert(num_group)
                 groups = data.Groups;
                 var dataPoints = []
-                var dataPoints_rmax = [{x: 0}]
-                var dataPoints_rmin = [{x: 0}]
+                var dataPoints_rmax = 60;
+                var dataPoints_rmin = 40;
                 for (i in groups){
                     group = groups[i];
                     num_nccn = group.tasks.length;
                     rows = [];
                     
                     dataPoints.push({y: group.Rj})
-                    dataPoints_rmax.push({y: 60})
-                    dataPoints_rmin.push({y: 40})
+               
 
                     for (j = 0; j < num_nccn; j++){
                         tr = $("<tr></tr>");
@@ -263,7 +262,23 @@ function showDiagram(data_points, data_points_rmax, data_points_rmin) {
         exportEnabled: true,
         theme: "light1", // "light1", "light2", "dark1", "dark2"
         title: {
-            text: "Simple Column Chart with Index Labels"
+            text: "Biểu Đồ Phụ Tải"
+        },
+        axisY: {
+            title: "Nhịp Riêng",
+            suffix: "s",
+            stripLines: [{
+                    value: data_points_rmax, // Đổi cho tao ở đây là Rmax và Rmin nhé
+                    label: "Rmin"
+                },
+                {
+                    value: data_points_rmin, // Rmin ở đây nè. Nó là 1 số thôi chứ k phải mảng đâu.
+                    label: "Rmax"
+                }
+            ]
+        },
+        axisX: {
+            title: "NCSX"
         },
         data: [{
             type: "column", //change type to bar, line, area, pie, etc
@@ -271,20 +286,5 @@ function showDiagram(data_points, data_points_rmax, data_points_rmin) {
             indexLabelFontColor: "#5A5757",
             indexLabelPlacement: "outside",
             dataPoints: data_points
-        }, {
-            type: "line",
-            name: "Rmax",
-            showInLegend: true,
-            yValueFormatString: "$#,##0",
-            dataPoints: data_points_rmax
-        }, {
-            type: "line",
-            name: "Rmin",
-            showInLegend: true,
-            yValueFormatString: "$#,##0",
-            dataPoints: data_points_rmin
-        },]
+        }]
     });
-    chart.render();
-
-}
