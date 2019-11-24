@@ -288,3 +288,4 @@ function showDiagram(data_points, data_points_rmax, data_points_rmin) {
             dataPoints: data_points
         }]
     });
+}
