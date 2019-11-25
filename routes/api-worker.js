@@ -49,7 +49,6 @@ api_worker.post('/api-worker', (req, res) => {
             }
             
             var text = fs.readFileSync("./.temp/output.json");
-            console.log(JSON.parse(text));
             res.send(text);
             
         }
