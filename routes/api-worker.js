@@ -15,8 +15,12 @@ api_worker.post('/api-worker', (req, res) => {
     num_NCCN = NCCN.length;
     num_RBTT = RBTT.length;
 
-    // R = parseInt(time)*parseInt(deviation);
-    R = req.body.R;
+    if (req.body.R != NaN){
+        R = req.body.R;
+    } else {
+        R = parseInt(time)*parseInt(deviation);
+    }
+    
 
     str = num_NCCN.toString() + '\n' + R + '\n' + deviation + '\n';
 
