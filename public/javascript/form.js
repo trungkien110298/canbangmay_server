@@ -134,7 +134,7 @@ $(document).ready(function () {
 
 
     $("#submit").click(function () {
-        time = $("#time").val()
+        time = parseInt($("#time").val())*3600
         deviation = $("#deviation").val()
         wattage = $("#wattage").val()
         r = $("#R").val()
