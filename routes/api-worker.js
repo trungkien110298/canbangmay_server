@@ -53,8 +53,13 @@ api_worker.post('/api-worker', (req, res) => {
             }
             
             var text = fs.readFileSync("./.temp/output.json");
-            res.send(text);
-            
+            output_data = JSON.parse(text);
+            output_data.NCCN = NCCN;
+            output_data.rmin = parseInt(R) - parseInt(R)*deviation/100;
+            output_data.rmax = parseInt(R) + parseInt(R)*deviation/100;
+            text = JSON.stringify(output_data)
+            res.send(output_data);
+        
         }
     );
 

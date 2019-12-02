@@ -134,7 +134,7 @@ $(document).ready(function () {
 
 
     $("#submit").click(function () {
-        time = parseInt($("#time").val())*3600
+        time = parseInt($("#time").val()) * 3600
         deviation = $("#deviation").val()
         wattage = $("#wattage").val()
         r = $("#R").val()
@@ -176,117 +176,366 @@ $(document).ready(function () {
             success: function (data) {
                 // alert(data)
                 $("#table-result tbody").html(" ");
-                $("#result-NCCN").css("display","");
-                $("#diagram-result").css("display","");
+                $("#myChart").html(" ");
+                $("#result-NCCN").css("display", "");
+                $("#diagram-result").css("display", "");
                 num_group = data.Numgroups;
-                // alert(num_group)
+                // alert(JSON.stringify(data))
                 groups = data.Groups;
                 var dataPoints = []
-                var dataPoints_rmax = 60;
-                var dataPoints_rmin = 40;
-                for (i in groups){
+                var dataPoints_rmax = data.rmax;
+                var dataPoints_rmin = data.rmin;
+                // alert(dataPoints_rmax);
+                // alert(dataPoints_rmin);
+                list_NCCN = data.NCCN;
+                // alert(list_NCCN)
+                for (i in groups) {
                     group = groups[i];
                     num_nccn = group.tasks.length;
                     rows = [];
-                    
-                    dataPoints.push({y: group.Rj})
-               
 
-                    for (j = 0; j < num_nccn; j++){
+                    dataPoints.push(group.Rj)
+
+
+                    for (j = 0; j < num_nccn; j++) {
                         tr = $("<tr></tr>");
                         rows.push(tr);
                     }
-                    
-                   
-                    td_id = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle"})
-                        .append($("<p></p>", { class: "text-center"}).html(group.id));
+
+
+                    td_id = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+                        .append($("<p></p>", { class: "text-center" }).html(group.id));
                     rows[0].append(td_id)
 
-                
-                    for (task in group.tasks){
+
+                    for (task in group.tasks) {
                         nccn = group.tasks[task];
 
-                        td_task = $("<td></td>").append($("<p></p>", { class: "text-center"}).html(nccn.task));
+                        td_task = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(nccn.task));
                         td_task.appendTo(rows[task]);
-                        
-                        td_NCCN = $("<td></td>").append($("<p></p>", { class: "text-center"}).html("A"));
+
+                        td_NCCN = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(list_NCCN[parseInt(nccn.task) - 1].name));
                         td_NCCN.appendTo(rows[task]);
 
-                        
-                        td_machine = $("<td></td>").append($("<p></p>", { class: "text-center"}).html(nccn.machine));
+
+                        td_machine = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(nccn.machine));
                         td_machine.appendTo(rows[task]);
 
-                        
-                        td_ti = $("<td></td>").append($("<p></p>", { class: "text-center"}).html(nccn.ti));
+
+                        td_ti = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(nccn.ti));
                         td_ti.appendTo(rows[task]);
-                        
+
                     }
 
-                    td_time = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle"})
-                        .append($("<p></p>", { class: "text-center"}).html(group.total_time));
+                    td_time = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+                        .append($("<p></p>", { class: "text-center" }).html(group.total_time));
                     rows[0].append(td_time);
 
-                    td_level = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle"})
-                        .append($("<p></p>", { class: "text-center"}).html(group.level));
+                    td_level = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+                        .append($("<p></p>", { class: "text-center" }).html(group.level));
                     rows[0].append(td_level);
 
-                    td_workers = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle"})
-                        .append($("<p></p>", { class: "text-center"}).html(group.workers));
+                    td_workers = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+                        .append($("<p></p>", { class: "text-center" }).html(group.workers));
                     rows[0].append(td_workers);
 
-                    td_Rj = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle"})
-                        .append($("<p></p>", { class: "text-center"}).html(group.Rj));
+                    td_Rj = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+                        .append($("<p></p>", { class: "text-center" }).html(group.Rj));
                     rows[0].append(td_Rj)
 
 
-                    for (j in rows){
+                    for (j in rows) {
                         $("#table-result tbody").append(rows[j])
 
                     }
                     // alert(rows.length);
-                    
+
                 }
                 showDiagram(dataPoints, dataPoints_rmax, dataPoints_rmin)
             }
         })
     });
 
-
 });
 
 
 
 function showDiagram(data_points, data_points_rmax, data_points_rmin) {
-    var chart = new CanvasJS.Chart("chartContainer", {
-        animationEnabled: true,
-        exportEnabled: true,
-        theme: "light1", // "light1", "light2", "dark1", "dark2"
+    var label = [];
+    var rmin = [];
+    var rmax = [];
+    for (i = 0; i < data_points.length; i++) {
+        label.push(i + 1);
+        rmin.push(data_points_rmin);
+        rmax.push(data_points_rmax);
+    }
+    
+
+
+
+
+    var theme = {
+        color: [
+            '#26B99A', '#34495E', '#BDC3C7', '#3498DB',
+            '#9B59B6', '#8abb6f', '#759c6a', '#bfd3b7'
+        ],
+
         title: {
-            text: "Biểu Đồ Phụ Tải"
+            itemGap: 8,
+            textStyle: {
+                fontWeight: 'normal',
+                color: '#408829'
+            }
         },
-        axisY: {
-            title: "Nhịp Riêng",
-            suffix: "s",
-            stripLines: [{
-                    value: data_points_rmax, // Đổi cho tao ở đây là Rmax và Rmin nhé
-                    label: "Rmin"
+
+        dataRange: {
+            color: ['#1f610a', '#97b58d']
+        },
+
+        toolbox: {
+            color: ['#408829', '#408829', '#408829', '#408829']
+        },
+
+        tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            axisPointer: {
+                type: 'line',
+                lineStyle: {
+                    color: '#408829',
+                    type: 'dashed'
                 },
-                {
-                    value: data_points_rmin, // Rmin ở đây nè. Nó là 1 số thôi chứ k phải mảng đâu.
-                    label: "Rmax"
+                crossStyle: {
+                    color: '#408829'
+                },
+                shadowStyle: {
+                    color: 'rgba(200,200,200,0.3)'
                 }
-            ]
+            }
         },
-        axisX: {
-            title: "NCSX"
+
+        dataZoom: {
+            dataBackgroundColor: '#eee',
+            fillerColor: 'rgba(64,136,41,0.2)',
+            handleColor: '#408829'
         },
-        data: [{
-            type: "column", //change type to bar, line, area, pie, etc
-            //indexLabel: "{y}", //Shows y value on all Data Points
-            indexLabelFontColor: "#5A5757",
-            indexLabelPlacement: "outside",
-            dataPoints: data_points
+        grid: {
+            borderWidth: 0
+        },
+
+        categoryAxis: {
+            axisLine: {
+                lineStyle: {
+                    color: '#408829'
+                }
+            },
+            splitLine: {
+                lineStyle: {
+                    color: ['#eee']
+                }
+            }
+        },
+
+        valueAxis: {
+            axisLine: {
+                lineStyle: {
+                    color: '#408829'
+                }
+            },
+            splitArea: {
+                show: true,
+                areaStyle: {
+                    color: ['rgba(250,250,250,0.1)', 'rgba(200,200,200,0.1)']
+                }
+            },
+            splitLine: {
+                lineStyle: {
+                    color: ['#eee']
+                }
+            }
+        },
+        timeline: {
+            lineStyle: {
+                color: '#408829'
+            },
+            controlStyle: {
+                normal: { color: '#408829' },
+                emphasis: { color: '#408829' }
+            }
+        },
+
+        k: {
+            itemStyle: {
+                normal: {
+                    color: '#68a54a',
+                    color0: '#a9cba2',
+                    lineStyle: {
+                        width: 1,
+                        color: '#408829',
+                        color0: '#86b379'
+                    }
+                }
+            }
+        },
+        map: {
+            itemStyle: {
+                normal: {
+                    areaStyle: {
+                        color: '#ddd'
+                    },
+                    label: {
+                        textStyle: {
+                            color: '#c12e34'
+                        }
+                    }
+                },
+                emphasis: {
+                    areaStyle: {
+                        color: '#99d2dd'
+                    },
+                    label: {
+                        textStyle: {
+                            color: '#c12e34'
+                        }
+                    }
+                }
+            }
+        },
+        force: {
+            itemStyle: {
+                normal: {
+                    linkStyle: {
+                        strokeColor: '#408829'
+                    }
+                }
+            }
+        },
+        chord: {
+            padding: 4,
+            itemStyle: {
+                normal: {
+                    lineStyle: {
+                        width: 1,
+                        color: 'rgba(128, 128, 128, 0.5)'
+                    },
+                    chordStyle: {
+                        lineStyle: {
+                            width: 1,
+                            color: 'rgba(128, 128, 128, 0.5)'
+                        }
+                    }
+                },
+                emphasis: {
+                    lineStyle: {
+                        width: 1,
+                        color: 'rgba(128, 128, 128, 0.5)'
+                    },
+                    chordStyle: {
+                        lineStyle: {
+                            width: 1,
+                            color: 'rgba(128, 128, 128, 0.5)'
+                        }
+                    }
+                }
+            }
+        },
+        gauge: {
+            startAngle: 225,
+            endAngle: -45,
+            axisLine: {
+                show: true,
+                lineStyle: {
+                    color: [[0.2, '#86b379'], [0.8, '#68a54a'], [1, '#408829']],
+                    width: 8
+                }
+            },
+            axisTick: {
+                splitNumber: 10,
+                length: 12,
+                lineStyle: {
+                    color: 'auto'
+                }
+            },
+            axisLabel: {
+                textStyle: {
+                    color: 'auto'
+                }
+            },
+            splitLine: {
+                length: 18,
+                lineStyle: {
+                    color: 'auto'
+                }
+            },
+            pointer: {
+                length: '90%',
+                color: 'auto'
+            },
+            title: {
+                textStyle: {
+                    color: '#333'
+                }
+            },
+            detail: {
+                textStyle: {
+                    color: 'auto'
+                }
+            }
+        },
+        textStyle: {
+            fontFamily: 'Arial, Verdana, sans-serif'
+        }
+    };
+
+    var echartBar = echarts.init(document.getElementById('echarts'), theme);
+
+    echartBar.setOption({
+        title: {
+            text: 'Nhịp sản xuất',
+            subtext: ''
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ['sales', 'purchases']
+        },
+        toolbox: {
+            show: false
+        },
+        calculable: false,
+        xAxis: [{
+            type: 'category',
+            data: label
+        }],
+        yAxis: [{
+            type: 'value'
+        }],
+        series: [{
+            name: 'R',
+            type: 'bar',
+            data: data_points,
+            markPoint: {
+                data: [{
+                    type: 'max',
+                    name: 'max'
+                }, {
+                    type: 'min',
+                    name: 'min'
+                }]
+            },
+            markLine: {
+                data: [{
+                    yAxis: data_points_rmin,
+                    name: 'rmin'
+                }, {
+                    yAxis: data_points_rmax,
+                    name: 'rmax'
+                }]
+            }
         }]
     });
-    chart.render();
+
+
+
+
 }
