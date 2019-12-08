@@ -10,7 +10,9 @@
   "author": "Phan Trung Kien",
   "license": "ISC",
   "dependencies": {
+    "@antv/g6": "^3.2.4",
     "body-parse": "^0.1.0",
+    "browserify": "^16.5.0",
     "chart.js": "^2.9.3",
     "consolidate": "^0.15.1",
     "echart": "^0.1.3",

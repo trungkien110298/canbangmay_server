@@ -1,3 +1,5 @@
+import {draw_graph} from './draw.js';
+
 $(document).ready(function () {
     $("#add_NCCN").on("click", function () {
         // Dynamic Rows Code
@@ -134,19 +136,19 @@ $(document).ready(function () {
 
 
     $("#submit").click(function () {
-        time = parseInt($("#time").val()) * 3600
-        deviation = $("#deviation").val()
-        wattage = $("#wattage").val()
-        r = $("#R").val()
-        data = { "NCCN": [], "RBTT": [], "time": time, "deviation": deviation, "wattage": wattage, "R": r }
+        let time = parseInt($("#time").val()) * 3600
+        let deviation = $("#deviation").val()
+        let wattage = $("#wattage").val()
+        let r = $("#R").val()
+        let data = { "NCCN": [], "RBTT": [], "time": time, "deviation": deviation, "wattage": wattage, "R": r }
         $("#table_NCCN tbody tr").each(function () {
             if (parseInt($(this).data("id")) > 0) {
-                name = $(this).find(':input[name = "name"]').val()
-                time = $(this).find(':input[name = "time"]').val()
-                device = $(this).find(':input[name = "device"]').val()
-                kind = $(this).find(':input[name = "kind"]').val()
-                level = $(this).find(':input[name = "level"]').val()
-                row = {
+                let name = $(this).find(':input[name = "name"]').val()
+                let time = $(this).find(':input[name = "time"]').val()
+                let device = $(this).find(':input[name = "device"]').val()
+                let kind = $(this).find(':input[name = "kind"]').val()
+                let level = $(this).find(':input[name = "level"]').val()
+                let row = {
                     "name": name,
                     "time": time,
                     "device": device,
@@ -158,9 +160,9 @@ $(document).ready(function () {
         });
         $("#table_RBTT tbody tr").each(function () {
             if (parseInt($(this).data("id")) > 0) {
-                NCCN_1 = $(this).find(':input[name = "NCCN-1"]').val()
-                NCCN_2 = $(this).find(':input[name = "NCCN-2"]').val()
-                row = {
+                let NCCN_1 = $(this).find(':input[name = "NCCN-1"]').val()
+                let NCCN_2 = $(this).find(':input[name = "NCCN-2"]').val()
+                let row = {
                     "nccn_1": NCCN_1,
                     "nccn_2": NCCN_2
                 }
@@ -177,74 +179,76 @@ $(document).ready(function () {
                 // alert(data)
                 $("#table-result tbody").html(" ");
                 $("#myChart").html(" ");
+                $("#graph").html(" ");
                 $("#result-NCCN").css("display", "");
                 $("#diagram-result").css("display", "");
-                num_group = data.Numgroups;
+                $("#graph-result").css("display", "");
+                let num_group = data.Numgroups;
                 // alert(JSON.stringify(data))
-                groups = data.Groups;
+                let groups = data.Groups;
                 var dataPoints = []
                 var dataPoints_rmax = data.rmax;
                 var dataPoints_rmin = data.rmin;
                 // alert(dataPoints_rmax);
                 // alert(dataPoints_rmin);
-                list_NCCN = data.NCCN;
+                var list_NCCN = data.NCCN;
                 // alert(list_NCCN)
-                for (i in groups) {
-                    group = groups[i];
-                    num_nccn = group.tasks.length;
-                    rows = [];
+                for (let i in groups) {
+                    let group = groups[i];
+                    let num_nccn = group.tasks.length;
+                    let rows = [];
 
                     dataPoints.push(group.Rj)
 
 
-                    for (j = 0; j < num_nccn; j++) {
-                        tr = $("<tr></tr>");
+                    for (let j = 0; j < num_nccn; j++) {
+                        let tr = $("<tr></tr>");
                         rows.push(tr);
                     }
 
 
-                    td_id = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+                    let td_id = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
                         .append($("<p></p>", { class: "text-center" }).html(group.id));
                     rows[0].append(td_id)
 
 
-                    for (task in group.tasks) {
-                        nccn = group.tasks[task];
+                    for (let task in group.tasks) {
+                        let nccn = group.tasks[task];
 
-                        td_task = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(nccn.task));
+                        let td_task = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(nccn.task));
                         td_task.appendTo(rows[task]);
 
-                        td_NCCN = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(list_NCCN[parseInt(nccn.task) - 1].name));
+                        let td_NCCN = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(list_NCCN[parseInt(nccn.task) - 1].name));
                         td_NCCN.appendTo(rows[task]);
 
 
-                        td_machine = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(nccn.machine));
+                        let td_machine = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(nccn.machine));
                         td_machine.appendTo(rows[task]);
 
 
-                        td_ti = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(nccn.ti));
+                        let td_ti = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(nccn.ti));
                         td_ti.appendTo(rows[task]);
 
                     }
 
-                    td_time = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+                    let td_time = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
                         .append($("<p></p>", { class: "text-center" }).html(group.total_time));
                     rows[0].append(td_time);
 
-                    td_level = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+                    let td_level = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
                         .append($("<p></p>", { class: "text-center" }).html(group.level));
                     rows[0].append(td_level);
 
-                    td_workers = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+                    let td_workers = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
                         .append($("<p></p>", { class: "text-center" }).html(group.workers));
                     rows[0].append(td_workers);
 
-                    td_Rj = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+                    let td_Rj = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
                         .append($("<p></p>", { class: "text-center" }).html(group.Rj));
                     rows[0].append(td_Rj)
 
 
-                    for (j in rows) {
+                    for (let j in rows) {
                         $("#table-result tbody").append(rows[j])
 
                     }
@@ -252,6 +256,8 @@ $(document).ready(function () {
 
                 }
                 showDiagram(dataPoints, dataPoints_rmax, dataPoints_rmin)
+                draw_graph(data)
+
             }
         })
     });
@@ -264,7 +270,7 @@ function showDiagram(data_points, data_points_rmax, data_points_rmin) {
     var label = [];
     var rmin = [];
     var rmax = [];
-    for (i = 0; i < data_points.length; i++) {
+    for (let    i = 0; i < data_points.length; i++) {
         label.push(i + 1);
         rmin.push(data_points_rmin);
         rmax.push(data_points_rmax);
@@ -534,8 +540,4 @@ function showDiagram(data_points, data_points_rmax, data_points_rmin) {
             }
         }]
     });
-
-
-
-
 }
