@@ -99,7 +99,7 @@ export function draw_graph(group_data) {
         },
         pixelRatio: 2,
         defaultNode: {
-            shape: 'rect'
+            shape: 'sql'
         },
         defaultEdge: {
             shape: 'polyline',
