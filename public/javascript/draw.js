@@ -14,7 +14,6 @@ export function draw_graph(group_data) {
             name: array1[i].label + 1,
             conf: []
         }
-        // alert(JSON.stringify(node))
         nodes.push(node)
     }
 
@@ -25,7 +24,7 @@ export function draw_graph(group_data) {
             name: array2[i].label + 1,
             conf: []
         }
-        // alert(JSON.stringify(node))
+        
         nodes.push(node)
     }
 
@@ -36,20 +35,12 @@ export function draw_graph(group_data) {
             source: u,
             target: v,
         }
-        // alert(JSON.stringify(edge))
+      
         edges.push(edge)
     }
-//     alert(JSON.stringify(edges))
+
     const data = {
         nodes: nodes,
-//         edges: [{
-//             source: '1',
-//             target: '2'
-//         },
-//         {
-//             source: '2',
-//             target: '3'
-//         }]
         edges: edges
     };
     
@@ -108,7 +99,7 @@ export function draw_graph(group_data) {
         },
         pixelRatio: 2,
         defaultNode: {
-            shape: 'sql'
+            shape: 'rect'
         },
         defaultEdge: {
             shape: 'polyline',

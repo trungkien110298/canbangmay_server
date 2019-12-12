@@ -1,0 +1,1 @@
+nodemon start | start chrome /new-window http://localhost:3000
