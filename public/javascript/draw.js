@@ -4,12 +4,17 @@ export function draw_graph(group_data) {
     let array1 = group_data.array1;
     let array2 = group_data.array2;
     let list_edge = group_data.edge;
-
+    
+    const width = document.getElementById('graph').scrollWidth;
+    const height = 500;
+    
     let  edges = [];
     let nodes = [];
     for (let i in array1){
         let node = {
             id: array1[i].id,
+            x: width/2 - 150,
+            y: 100 + i*100,
             type: 'alps',
             name: array1[i].label + 1,
             conf: []
@@ -20,6 +25,8 @@ export function draw_graph(group_data) {
     for (let i in array2){
         let node = {
             id: array2[i].id,
+            x: width/2 + 150,
+            y: 100 + i*100,
             type: 'alps',
             name: array2[i].label + 1,
             conf: []
@@ -81,28 +88,31 @@ export function draw_graph(group_data) {
         fill: '#5394ef'
     };
 
-    const width = document.getElementById('graph').scrollWidth;
-    const height = 500;
+    
     const graph = new G6.Graph({
         container: 'graph',
         width,
         height,
-        layout: {
-            type: 'dagre',
-            nodesepFunc: d => {
-                if (d.id === '3') {
-                    return 500;
-                }
-                return 50;
-            },
-            ranksep: 70
-        },
+//         layout: {
+//             type: 'grid'
+// //             center: [200, 200], // The center of the graph by default
+// //             linkDistance: 50, // The edge length
+// //             preventOverlap: true, // nodeSize or size in data is required for preventOverlap: true
+// //             nodeSize: 30,
+// //             sweep: 10,
+// //             equidistant: false,
+// //             startAngle: 0,
+// //             clockwise: false,
+// //             maxLevelDiff: 10,
+// //             sortBy: 'degree',
+// //             workerEnabled: true, // Whether to activate web-worker
+//         },
         pixelRatio: 2,
         defaultNode: {
             shape: 'sql'
         },
         defaultEdge: {
-            shape: 'polyline',
+            shape: 'line',
             style: {
                 radius: 20,
                 offset: 45,
@@ -130,7 +140,7 @@ export function draw_graph(group_data) {
                 }
             }]
         },
-        fitView: true
+//         fitView: true
     });
     graph.data(data);
     graph.render();
