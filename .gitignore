@@ -1,3 +1,5 @@
 node_modules
 controller/Problem1.exe
 controller/Problem1
+.temp/input.txt
+.temp/output.json
