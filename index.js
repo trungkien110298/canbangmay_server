@@ -4,6 +4,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var cons = require('consolidate');
 var cmd = require('node-cmd');
+var os = require('os')
 
 
 // Creat server app
@@ -28,8 +29,10 @@ app.use('/api', api_worker);
 
 // var upload = multer({ storage: storage }).single('uploadfile');
 // app.use(favicon(__dirname + '/public/image/favicon.ico'));
+if (os.platform() == "win32") command = 'cd controller && gcc Problem1.cpp -lstdc++ -o Problem1.exe"';
+    else command = 'cd controller &&  gcc Problem1.cpp -lstdc++ -o Problem1'
 cmd.get(
-    "cd controller && gcc Problem1.cpp -lstdc++ -o Problem1.exe",
+    command,
     function (err, data, stderr) {
         if (err != null){
             console.log(err);
