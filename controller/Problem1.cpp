@@ -43,8 +43,8 @@ task taskList[MAXN + 5];
 group groupList[3*MAXN + 5];
 
 void readInput(){
-    freopen("../.temp/input.txt", "r", stdin);
-    freopen("../.temp/output.json", "w", stdout);
+    freopen("../temp/input.txt", "r", stdin);
+    freopen("../temp/output.json", "w", stdout);
 
     cin >> N >> R >> sailech;
 
