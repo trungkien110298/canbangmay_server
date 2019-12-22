@@ -38,9 +38,10 @@ api_worker.post('/api-worker', (req, res) => {
     
 
 
-    
+    // var text = fs.readFileSync("./.temp/template.txt");
+    // str += text;
 
-    fs.writeFileSync("./temp/input.txt", str);
+    fs.writeFileSync("./.temp/input.txt", str);
     date =  new Date();
     console.log(date.toLocaleString('vi-GB', { timeZone: 'Asia/Ho_Chi_Minh' }) + ' - Save input file!')
 
@@ -53,7 +54,7 @@ api_worker.post('/api-worker', (req, res) => {
                 console.log(err);
             }
             
-            var text = fs.readFileSync("./temp/output.json");
+            var text = fs.readFileSync("./.temp/output.json");
             output_data = JSON.parse(text);
             output_data.NCCN = NCCN;
             output_data.rmin = parseInt(R) - parseInt(R)*deviation/100;
