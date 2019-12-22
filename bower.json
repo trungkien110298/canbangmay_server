@@ -13,5 +13,12 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "html2canvas": "^0.4.1",
+    "echarts": "^4.5.0",
+    "canvas2image": "*",
+    "file-saver": "^2.0.2",
+    "js-xlsx": "^0.15.2"
+  }
 }
