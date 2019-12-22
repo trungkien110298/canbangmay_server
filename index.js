@@ -15,6 +15,7 @@ app.engine('html', cons.swig)
 app.set("view engine", "html");
 app.set("views", "./views");
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 
 
 app.use(bodyParser.json());

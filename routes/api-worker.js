@@ -42,6 +42,8 @@ api_worker.post('/api-worker', (req, res) => {
     // str += text;
 
     fs.writeFileSync("./.temp/input.txt", str);
+    date =  new Date();
+    console.log(date.toLocaleString('vi-GB', { timeZone: 'Asia/Ho_Chi_Minh' }) + ' - Save input file!')
 
     if (os.platform() == "win32") command = 'cd controller && start Problem1.exe';
     else command = 'cd controller &&  ./Problem1'
@@ -59,7 +61,7 @@ api_worker.post('/api-worker', (req, res) => {
             output_data.rmax = parseInt(R) + parseInt(R)*deviation/100;
             text = JSON.stringify(output_data)
             res.send(output_data);
-        
+            console.log(date.toLocaleString('vi-GB', { timeZone: 'Asia/Ho_Chi_Minh' }) + ' - Send output file!')
         }
     );
 

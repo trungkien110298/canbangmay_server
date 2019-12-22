@@ -1,0 +1,17 @@
+{
+  "name": "canbangmay",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Phan Trung Kien"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/trungkien110298/canbangmay_server",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

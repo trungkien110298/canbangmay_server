@@ -165,7 +165,7 @@
                     <label class="control-label col-md-3"> Mã sản phẩm
                     </label>
                     <div class="col-md-7">
-                      <input type="text" id="time" class="form-control">
+                      <input type="text" id="product_id" class="form-control">
                     </div>
                   </div>
                 </form>
@@ -178,7 +178,7 @@
                     <label class="control-label col-md-3"> Mô tả
                     </label>
                     <div class="col-md-7">
-                      <textarea type="text" id="time" class="form-control"></textarea>
+                      <textarea type="text" id="decription" class="form-control"></textarea>
                     </div>
                   </div>
                 </form>
@@ -436,7 +436,7 @@
               </div>
 
               <div class="x_content">
-                <form id="NCCN-result" data-parsley-validate class="form-horizontal form-label-left">
+                <form data-parsley-validate class="form-horizontal form-label-left">
                   <div class="container">
                     <div class="row clearfix">
                       <div class="col-md-12 table-responsive">
@@ -501,7 +501,7 @@
               </div>
 
               <div class="x_content">
-                <form id="NCCN-result" data-parsley-validate class="form-horizontal form-label-left">
+                <form data-parsley-validate class="form-horizontal form-label-left">
                   <div class="container">
                     <div class="row clearfix">
 
@@ -509,7 +509,7 @@
                         <div id="echarts" style="height:600px;"></div>
                       </div>
 
-                      <script src="./vendors/echarts/dist/echarts.min.js"></script>
+
                     </div>
 
 
@@ -551,7 +551,7 @@
               <div class="col-md-6 col-md-offset-3">
                 <div class="col-md-12">
                   <button class="btn btn-primary col-md-3" type="button">Reset</button>
-                  <button class="btn btn-primary col-md-3" type="reset">Save</button>
+                  <button class="btn btn-primary col-md-3" id="save">Save</button>
                   <button id="submit" type="submit" class="btn btn-success col-md-3">Submit</button>
                 </div>
 
@@ -615,7 +615,12 @@
   <!-- custom dynamic table -->
   <script src="./javascript/form.js" type="module"></script>
   <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.2.3/build/g6.js"></script>
-
+  <script src="bower_components/js-xlsx/dist/xlsx.full.min.js"></script>
+  <script src="bower_components/file-saver/dist/FileSaver.min.js"></script>
+  <script src="bower_components/echarts/dist/echarts.min.js"></script>
+  <script src="bower_components/html2canvas/build/html2canvas.min.js"></script>
+  <script src="bower_components/canvas2image/canvas2image/canvas2image.js"></script>
+  
 </body>
 
 </html>

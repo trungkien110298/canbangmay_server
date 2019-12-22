@@ -15,7 +15,7 @@ export function draw_graph(group_data) {
             x: width/2 - 150,
             y: 100 + i*100,
             type: 'alps',
-            name: array1[i].label + 1,
+            name: array1[i].label,
             conf: []
         }
         nodes.push(node)
@@ -27,7 +27,7 @@ export function draw_graph(group_data) {
             x: width/2 + 150,
             y: 100 + i*100,
             type: 'alps',
-            name: array2[i].label + 1,
+            name: array2[i].label,
             conf: []
         }
         

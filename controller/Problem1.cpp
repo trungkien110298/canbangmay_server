@@ -84,16 +84,16 @@ void readInput(){
     }*/
 
     if (sailech == 1){
-        Rmax = R * 0.9;
-        Rmin = R * 1.15;
+        Rmin = R * 0.9;
+        Rmax = R * 1.1;
     }
     else if (sailech == 0){
-        Rmax = R * 0.85;
-        Rmin = R * 1.2;
+        Rmin = R * 0.85;
+        Rmax = R * 1.15;
     }
     else{
-        Rmax = R * 0.95;
-        Rmin = R * 1.1;
+        Rmin = R * 0.95;
+        Rmax = R * 1.05;
     }
 
 }
@@ -220,21 +220,21 @@ groupStat calGroupStat(vector<int> group){
     int baseWorkers = 0;
     for(int i = 0; i < (int)group.size(); i++){
         totalTime += taskList[group[i]].worktime;
-        double workers = taskList[group[i]].worktime / (double)R;
-        if(workers < 1.15) baseWorkers ++;
-        else if(workers < 2.25) baseWorkers += 2;
+        double time = taskList[group[i]].worktime;
+        if(time < Rmax) baseWorkers ++;
+        else if(time < 2*Rmax) baseWorkers += 2;
         else baseWorkers += 3;
     }
 
     double actualWorkers = totalTime / (double)R;
     stat.TimeWork = totalTime;
     //stat.Rj = actualWorkers;
-    if(actualWorkers < 1.15){
+    if(totalTime < Rmax){
         stat.workers = 1;
         stat.workerSaved = baseWorkers - 1;
         //stat.balanced = (actualWorkers >= 0.85) ? 1 : 0;
     }
-    else if(actualWorkers < 2.25){
+    else if(totalTime < 2*Rmax){
         stat.workers = 2;
         stat.workerSaved = baseWorkers - 2;
         //stat.balanced = (actualWorkers >= 1.75) ? 1 : 0;
@@ -245,7 +245,7 @@ groupStat calGroupStat(vector<int> group){
         //stat.balanced = (actualWorkers >= 2.65) ? 1 : 0;
     }
     stat.Rj = totalTime/stat.workers;
-    stat.balanced = (stat.Rj >= 0.9*R && stat.Rj <= 1.1*R) ? 1 : 0;
+    stat.balanced = (stat.Rj >= Rmin && stat.Rj <= Rmax) ? 1 : 0;
     stat.tasks = (int)group.size();
     return stat;
 }
@@ -523,6 +523,7 @@ void line_arrangement(solution finalRes){
         for(int j = 0; j < stat.workers; j++)
         {
             group_index ++;
+            groupList[group_index].worker = stat.workers;
             groupList[group_index].index = i;
             if (j == 0){
                 groupList[group_index].isStart = true;
@@ -550,7 +551,15 @@ void line_arrangement(solution finalRes){
         if (groupList[i].isEnd){
             int u = groupList[i].index;
             for (int j = 1; j <= group_index; j++){
-                if (groupList[j].isStart){
+                if (groupList[j].isEnd){
+                    int v = groupList[j].index;
+                    if (u != v && checkConnect(finalRes, u, v)){
+                        groupList[i].edge.push_back(j);
+                        degree[j] ++;
+                    }
+                }
+                if ((!groupList[j].isStart && !groupList[j].isEnd))
+                {
                     int v = groupList[j].index;
                     if (u != v && checkConnect(finalRes, u, v)){
                         groupList[i].edge.push_back(j);
@@ -558,6 +567,47 @@ void line_arrangement(solution finalRes){
                     }
                 }
             }
+        }
+        if (groupList[i].isStart)
+        {
+            int u = groupList[i].index;
+            for (int j = 1; j <= group_index; j++){
+                if (groupList[j].isStart){
+                    if (groupList[i].worker > 1 || groupList[j].worker > 1)
+                    {
+                        int v = groupList[j].index;
+                        if (u != v && checkConnect(finalRes, u, v)){
+                            groupList[i].edge.push_back(j);
+                            degree[j] ++;
+                        }
+                    }
+
+                }
+                if (groupList[i].worker != 1 && (!groupList[j].isStart && !groupList[j].isEnd))
+                {
+                    int v = groupList[j].index;
+                    if (u != v && checkConnect(finalRes, u, v)){
+                        groupList[i].edge.push_back(j);
+                        degree[j] ++;
+                    }
+                }
+            }
+        }
+        if (!groupList[i].isStart && !groupList[i].isEnd)
+        {
+            int u = groupList[i].index;
+            for (int j = 1; j <= group_index; j++){
+                if ((groupList[j].worker != 3)||(!groupList[j].isStart && !groupList[j].isEnd))
+                {
+                    int v = groupList[j].index;
+                    if (u != v && checkConnect(finalRes, u, v)){
+                        groupList[i].edge.push_back(j);
+                        degree[j] ++;
+                    }
+                }
+
+            }
+
         }
     }
 
@@ -604,37 +654,37 @@ void line_arrangement(solution finalRes){
     cout << "\"array1\":[";
     for (int i = 1; i <= dem; i += 2){
         cout << "{\"id\": " << results[i] << ",";
-        cout << "\"label\": " << groupList[results[i]].index << "}";
+        cout << "\"label\": " << groupList[results[i]].index + 1<< "}";
         if (i < dem-1) cout << ",";
     }
     cout << "], ";
     cout << "\"array2\":[";
     for (int i = 2; i <= dem; i += 2){
         cout << "{\"id\": " << results[i] << ",";
-        cout << "\"label\": " << groupList[results[i]].index << "}";
+        cout << "\"label\": " << groupList[results[i]].index + 1<< "}";
         if (i < dem-1) cout << ",";
     }
     cout << "], ";
     cout << "\"edge\":[";
-
-    int list[2][100];
-    int count = 0;
+    int demphay = 0;
     for (int i = 1; i <= group_index; i++){
 
         for (int j = 0; j < groupList[i].edge.size(); j++){
-            list[0][count] = i;
-            list[1][count] = groupList[i].edge[j];
-            count++;
-        }
-    }
+            if (groupList[i].index != groupList[groupList[i].edge[j]].index)
+            {
+                if(demphay != 0) cout << ", ";
+                demphay++;
+                cout << "{\"u\": " << i << ",";
+                cout << "\"v\": " << groupList[i].edge[j];
+                //if (j < groupList[i].edge.size() - 1) cout << " ,";
+                cout << "}";
+                //if (i < group_index || j < groupList[i].edge.size() - 1) cout << ",";
+            }
 
-    for (int i =0; i < count; i++){
-        cout << "{\"u\": " << list[0][i] << ",";
-        cout << "\"v\": " << list[1][i];
-        cout << "}";
-        if (i < count-1) cout << ",";
+        }
+
+
     }
-    
     cout << "]";
 
 
@@ -730,8 +780,8 @@ int main(){
     //printSolution(finalRes);
     tuneSolution();
     //cout << "\nKet qua cuoi cung cua R = " << R << " : \n" ;
-    //printSolution(finalRes);
     printSolution(finalRes);
+    //printJSON(finalRes);
     //printJSON(finalRes);
     clock_t finish = clock();
 	//double duration = (double)(finish - start) / CLOCKS_PER_SEC;
