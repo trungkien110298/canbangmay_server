@@ -1,6 +1,5 @@
-// import G6 from "@antv/g6";
 
-export function draw_graph(group_data) {
+export function display_graph(group_data) {
     let array1 = group_data.array1;
     let array2 = group_data.array2;
     let list_edge = group_data.edge;
@@ -146,7 +145,7 @@ export function draw_graph(group_data) {
 
 }
 
-export function showDiagram(data_points, data_points_rmax, data_points_rmin) {
+export function display_chart(data_points, data_points_rmax, data_points_rmin) {
     var label = [];
     var rmin = [];
     var rmax = [];
