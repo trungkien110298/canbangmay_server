@@ -74,7 +74,7 @@ api_worker.post('/api-worker', (req, res) => {
                 input: input_data,
                 output: output_data
             });
-            // console.log("11111")
+            console.log(newProduct)
             newProduct.save(function (err) {
                 // if (err) {
                 //     console.log(err)
@@ -82,7 +82,7 @@ api_worker.post('/api-worker', (req, res) => {
                 // else {
                 //     console.log(date.toLocaleString('vi-GB', { timeZone: 'Asia/Ho_Chi_Minh' }) + ' - Save product to database')
                 // }
-                console.log("11111")
+                console.log("Hey Jude")
                 console.log(err)
             });
         }

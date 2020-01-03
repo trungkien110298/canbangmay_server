@@ -5,29 +5,32 @@ $(document).ready(function () {
         method: 'GET',
         success: function (data) {
             var list_product = data.list_product;
-            for (let i in list_product){
-                
+            for (let i in list_product) {
+
                 let product = list_product[i];
                 // alert(JSON.stringify(product))
-                let tr = $("<tr></tr>");
+                let tr = $("<tr></tr>", { id: "tr" + product._id });
+
+                let td_style = { style: "vertical-align: middle" }
+                let p_style = { class: "text-center", style: "margin: 0px 0px 0px" }
 
                 let stt = parseInt(i) + 1
-                let td_stt = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(stt));
+                let td_stt = $("<td></td>").append($("<h4></h4>", { class: "text-center" }).html(stt));
                 td_stt.appendTo(tr);
-                let td_id = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(product.product_id));
+                let td_id = $("<td></td>", td_style).append($("<p></p>", p_style).html(product.product_id));
                 td_id.appendTo(tr);
-                let td_name = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(product.product_name));
+                let td_name = $("<td></td>", td_style).append($("<p></p>", p_style).html(product.product_name));
                 td_name.appendTo(tr);
-                let td_dcp = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(product.description));
+                let td_dcp = $("<td></td>", td_style).append($("<p></p>", p_style).html(product.description));
                 td_dcp.appendTo(tr);
 
-                let button = $("<button></button>", { type:'button', class: "btn btn-primary", id: product._id }).html("Sửa");
-                $(button).on('click', function() {
+                let button = $("<button></button>", { type: "button", class: "btn btn-primary", id: product._id }).html("Sửa");
+                $(button).on('click', function () {
                     $.ajax({
                         url: '/api-get_product',
                         contentType: "application/json",
                         method: 'POST',
-                        data: JSON.stringify({"product": {"_id": product._id}}),
+                        data: JSON.stringify({ "product": { "_id": product._id } }),
                         dataType: 'json',
                         success: function (data) {
                             localStorage.setItem('data', JSON.stringify(data));
@@ -38,35 +41,58 @@ $(document).ready(function () {
                 let td_button = $("<td></td>").append(button);
                 td_button.appendTo(tr);
 
-                let del_button = $("<button></button>", { class: "btn btn-danger", id:  product._id }).html("Xóa");
-                $(del_button).on('click', function() {
-                    // $.ajax({
-                    //     url: '/api-get_product',
-                    //     contentType: "application/json",
-                    //     method: 'POST',
-                    //     data: JSON.stringify({"product": {"_id": product._id}}),
-                    //     dataType: 'json',
-                    //     success: function (data) {
-                    //         alert("!!!")
-                    //     }
-                    // })
+                let del_button = $("<button></button>", { type: "button", class: "btn btn-danger", id: product._id }).html("Xóa");
+                $(del_button).on('click', function () {
+                    // alert("!1")
+
+                    bootbox.confirm({
+                        message: "Bạn có muốn xóa sản phẩm này?",
+                        size: 'small',
+                        centerVertical: true,
+                        callback: function (result) {
+                            if (result) {
+                                $.ajax({
+                                    url: '/api-delete_product',
+                                    contentType: "application/json",
+                                    method: 'POST',
+                                    data: JSON.stringify({ "product": { "_id": product._id } }),
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        if (parseInt(data.code) == 200) {
+                                            let del_tr = document.getElementById("tr" + product._id)
+                                            del_tr.remove();
+                                            renumber();
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })
+
+
                 })
                 let td_del_button = $("<td></td>").append(del_button);
                 td_del_button.appendTo(tr);
 
 
                 $("#table_product tbody").append(tr);
-                
-                
+
+
             }
-            
+
         }
     });
-    
-    
-    
 
 });
+
+
+function renumber() {
+    var count = 0;
+    $.each($("#table_product tr td h4"), function () {
+        count++;
+        $(this).html(count);
+    });
+}
 
 
 

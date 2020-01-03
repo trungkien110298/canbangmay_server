@@ -13,7 +13,7 @@ var config = require('./config/database');
 var app = express();
 
 //Set up database
-mongoose.Promise = global.Promise;
+// mongoose.Promise = global.Promise;
 mongoose.connect(config.database, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -31,7 +31,8 @@ app.use('/bower_components', express.static(__dirname + '/bower_components'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-//router
+// ----------------- Router ---------------------------------- //
+
 app.get('/', function (req, res) {
     return res.render('home.html')
 });
@@ -39,6 +40,11 @@ app.get('/', function (req, res) {
 var api_get_product = require('./routes/api-get_product');
 app.use(api_get_product);
 
+var api_save_product = require('./routes/api-save_product');
+app.use(api_save_product);
+
+var api_delete_product = require('./routes/api-delete_product');
+app.use(api_delete_product);
 
 var api_worker = require('./routes/api-worker');
 app.use(api_worker);
@@ -47,7 +53,9 @@ var api_get_list_product = require('./routes/api-get_list_product');
 app.use(api_get_list_product);
 
 
-// var upload = multer({ storage: storage }).single('uploadfile');
+
+// ---------------------------------------------------------- //
+
 // app.use(favicon(__dirname + '/public/image/favicon.ico'));
 
 //Re-complie program

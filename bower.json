@@ -19,6 +19,8 @@
     "echarts": "^4.5.0",
     "canvas2image": "*",
     "file-saver": "^2.0.2",
-    "js-xlsx": "^0.15.2"
+    "js-xlsx": "^0.15.2",
+    "bootbox.js": "bootbox#^5.4.0",
+    "bootstrap": "^4.4.1"
   }
 }

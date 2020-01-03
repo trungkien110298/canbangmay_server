@@ -11,24 +11,46 @@ $(document).ready(function () {
     });
 
     $("#save").click(function () {
-        req = get_data()
-        req["flag"] = "save"
+        let req = get_data()
 
         $.ajax({
-            url: '/api-worker',
+            url: '/api-save_product',
             contentType: "application/json",
             method: 'POST',
             data: JSON.stringify(req),
             dataType: 'json',
             success: function (data) {
-                display_result(data)
+                alert(JSON.stringify(data))
             }
         })
     });
 
+    $("#save_as").click(function () {
+        bootbox.prompt({
+            size: "small",
+            title: "Nhập mã sản phẩm mới",
+            callback: function (result) {
+                /* result = String containing user input if OK clicked or null if Cancel clicked */
+                // TODO: Check product id in database 
+                $("#product_id").val(result)
+                let req = get_data()
+                $.ajax({
+                    url: '/api-save_product',
+                    contentType: "application/json",
+                    method: 'POST',
+                    data: JSON.stringify(req),
+                    dataType: 'json',
+                    success: function (data) {
+                        alert(JSON.stringify(data))
+                    }
+                })
+            }
+        });
+
+    });
+
     $("#run").click(function () {
         let req = get_data()
-        req["flag"] = "submit"
         $.ajax({
             url: '/api-worker',
             contentType: "application/json",
@@ -43,23 +65,23 @@ $(document).ready(function () {
 
     let data = JSON.parse(localStorage.getItem('data'))
     if (data) {
-        alert(JSON.stringify(data))
+        // alert(JSON.stringify(data))
         localStorage.removeItem('data')
 
         //Display data
-        for (let i in data.input.NCCN){
+        for (let i in data.input.NCCN) {
             $("#add_NCCN").trigger("click");
         }
-        for (let i in data.input.RBTT){
+        for (let i in data.input.RBTT) {
             $("#add_RBTT").trigger("click");
         }
         display_data(data)
-        
+
         //Display result
-        if (data.output){
+        if (data.output) {
             display_result(data.output)
         }
-        
+
     }
     else {
         // Add new row when open site
@@ -72,11 +94,6 @@ $(document).ready(function () {
 
 
 });
-
-
-
-
-
 
 
 function add_NCCN_row() {
@@ -186,10 +203,10 @@ function add_RBTT_row() {
 
 
 function display_data(data) {
-    if (data.input.time){
-        $("#time").val(parseInt(data.input.time)/3600)
+    if (data.input.time) {
+        $("#time").val(parseInt(data.input.time) / 3600)
     }
-        
+
     $("#deviation").val(data.input.deviation)
     $("#wattage").val(data.input.wattage)
     $("#R").val(data.input.R)
@@ -197,7 +214,7 @@ function display_data(data) {
     let NCCN = data.input.NCCN
     $("#table_NCCN tbody tr").each(function () {
         if (parseInt($(this).data("id")) > 0) {
-            let i = parseInt($(this).data("id")) - 1 
+            let i = parseInt($(this).data("id")) - 1
             $(this).find(':input[name = "name"]').val(NCCN[i].name)
             $(this).find(':input[name = "time"]').val(NCCN[i].time)
             $(this).find(':input[name = "device"]').val(NCCN[i].device)
@@ -209,13 +226,15 @@ function display_data(data) {
     let RBTT = data.input.RBTT
     $("#table_RBTT tbody tr").each(function () {
         if (parseInt($(this).data("id")) > 0) {
-            let i = parseInt($(this).data("id")) - 1 
+            let i = parseInt($(this).data("id")) - 1
             $(this).find(':input[name = "NCCN-1"]').val(RBTT[i].nccn_1)
             $(this).find(':input[name = "NCCN-2"]').val(RBTT[i].nccn_2)
         }
     });
 
     $("#product_id").val(data.product_id)
+    $("#product_id").prop('disabled', true);
+
     $("#product_name").val(data.product_name)
     $("#description").val(data.description)
 
