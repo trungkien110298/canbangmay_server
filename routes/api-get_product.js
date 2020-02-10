@@ -5,7 +5,7 @@ var os = require('os')
 var Product = require("../models/product");
 var api_get_product = express.Router();
 api_get_product.get('/api-get_product', function (req, res) {
-    return res.render('view_op_worker.html')
+    return res.render('problem.html')
 });
 
 

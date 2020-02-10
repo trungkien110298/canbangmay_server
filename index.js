@@ -34,8 +34,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // ----------------- Router ---------------------------------- //
 
 app.get('/', function (req, res) {
-    return res.render('home.html')
+    return res.render('home.html');
 });
+
+var api_login = require('./routes/api-login');
+app.use(api_login);
 
 var api_get_product = require('./routes/api-get_product');
 app.use(api_get_product);
@@ -46,8 +49,12 @@ app.use(api_save_product);
 var api_delete_product = require('./routes/api-delete_product');
 app.use(api_delete_product);
 
-var api_worker = require('./routes/api-worker');
-app.use(api_worker);
+var api_problem_1 = require('./routes/api-problem_1');
+app.use(api_problem_1);
+
+
+var api_problem_2 = require('./routes/api-problem_2');
+app.use(api_problem_2);
 
 var api_get_list_product = require('./routes/api-get_list_product');
 app.use(api_get_list_product);
@@ -61,6 +68,17 @@ app.use(api_get_list_product);
 //Re-complie program
 if (os.platform() == "win32") command = 'cd controller && gcc Problem1.cpp -lstdc++ -o Problem1.exe"';
 else command = 'cd controller &&  gcc Problem1.cpp -lstdc++ -o Problem1'
+cmd.get(
+    command,
+    function (err, data, stderr) {
+        if (err != null) {
+            console.log(err);
+        }
+    }
+);
+
+if (os.platform() == "win32") command = 'cd controller && gcc Problem2.cpp -lstdc++ -o Problem2.exe"';
+else command = 'cd controller &&  gcc Problem2.cpp -lstdc++ -o Problem2'
 cmd.get(
     command,
     function (err, data, stderr) {

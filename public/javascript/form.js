@@ -30,7 +30,6 @@ $(document).ready(function () {
             size: "small",
             title: "Nhập mã sản phẩm mới",
             callback: function (result) {
-                /* result = String containing user input if OK clicked or null if Cancel clicked */
                 // TODO: Check product id in database 
                 $("#product_id").val(result)
                 let req = get_data()
@@ -41,7 +40,13 @@ $(document).ready(function () {
                     data: JSON.stringify(req),
                     dataType: 'json',
                     success: function (data) {
-                        alert(JSON.stringify(data))
+                        //bootbox.alert(data)
+                        if (data.code == "1010"){
+                            bootbox.alert("Mã sản phẩm đã tồn tại");
+                            $("#save_as").trigger("click");
+                        } else {
+                            bootbox.alert("Lưu thành công");
+                        }
                     }
                 })
             }
@@ -50,17 +55,35 @@ $(document).ready(function () {
     });
 
     $("#run").click(function () {
-        let req = get_data()
-        $.ajax({
-            url: '/api-worker',
-            contentType: "application/json",
-            method: 'POST',
-            data: JSON.stringify(req),
-            dataType: 'json',
-            success: function (data) {
-                display_result(data)
-            }
-        })
+        var tab_id = $("#problem li.active").attr('id');
+        // alert(tab_id);
+        if (tab_id == "p1"){
+            let req = get_data("problem1")
+            $.ajax({
+                url: '/api-problem_1',
+                contentType: "application/json",
+                method: 'POST',
+                data: JSON.stringify(req),
+                dataType: 'json',
+                success: function (data) {
+                    display_result(data)
+                }
+            })
+        } else {
+            let req = get_data("problem2")
+            $.ajax({
+                url: '/api-problem_2',
+                contentType: "application/json",
+                method: 'POST',
+                data: JSON.stringify(req),
+                dataType: 'json',
+                success: function (data) {
+                    display_result(data)
+                }
+            })
+        }
+
+        
     });
 
     let data = JSON.parse(localStorage.getItem('data'))
@@ -241,12 +264,23 @@ function display_data(data) {
 
 }
 
-function get_data() {
-    let time = parseInt($("#time").val()) * 3600
-    let deviation = $("#deviation").val()
-    let wattage = $("#wattage").val()
-    let r = $("#R").val()
-    let data = { "NCCN": [], "RBTT": [], "time": time, "deviation": deviation, "wattage": wattage, "R": r }
+function get_data(problem) {
+    let data = {};
+    if (problem == "problem1"){
+        let time = parseInt($("#time").val()) * 3600
+        let deviation = $("#deviation").val()
+        let wattage = $("#wattage").val()
+        let r = $("#R").val()
+        data = { "NCCN": [], "RBTT": [], "time": time, "deviation": deviation, "wattage": wattage, "R": r }
+    } else {
+        let deviation = $("#deviation2").val()
+        let num_worker = $("#num_worker").val()
+        data = { "NCCN": [], "RBTT": [], "deviation": deviation, "num_worker": num_worker }
+    }
+    
+    
+    
+    
     $("#table_NCCN tbody tr").each(function () {
         if (parseInt($(this).data("id")) > 0) {
             let name = $(this).find(':input[name = "name"]').val()

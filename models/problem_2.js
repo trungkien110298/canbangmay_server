@@ -1,22 +1,18 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var ProductSchema = new Schema({
+var ProblemTwoSchema = new Schema({
     product_id: {
         type: String,
         unique: true,
         lowercase: true,
         required: false
     },
-    product_name: {
-        type: String,
+    input:{
+        type: JSON,
         required: false
     },
-    description: {
-        type: String,
-        required: false
-    },
-    data:{
+    output:{
         type: JSON,
         required: false
     }
@@ -28,4 +24,4 @@ ProductSchema.pre('save', function (next) {
     next();
 });
 
-module.exports = mongoose.model('Product', ProductSchema);
+module.exports = mongoose.model('ProblemTwo', ProblemTwoSchema);

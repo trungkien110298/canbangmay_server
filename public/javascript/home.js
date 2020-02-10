@@ -5,6 +5,7 @@ $(document).ready(function () {
         method: 'GET',
         success: function (data) {
             var list_product = data.list_product;
+            $("#num_product").html(list_product.length)
             for (let i in list_product) {
 
                 let product = list_product[i];
@@ -13,18 +14,19 @@ $(document).ready(function () {
 
                 let td_style = { style: "vertical-align: middle" }
                 let p_style = { class: "text-center", style: "margin: 0px 0px 0px" }
+                let center = {class: "text-center"};
 
-                let stt = parseInt(i) + 1
-                let td_stt = $("<td></td>").append($("<h4></h4>", { class: "text-center" }).html(stt));
-                td_stt.appendTo(tr);
-                let td_id = $("<td></td>", td_style).append($("<p></p>", p_style).html(product.product_id));
+                // let stt = parseInt(i) + 1
+                // let td_stt = $("<td></td>").append($("<h4></h4>", { class: "text-center" }).html(stt));
+                // td_stt.appendTo(tr);
+                let td_id = $("<td></td>", center).html(product.product_id);
                 td_id.appendTo(tr);
-                let td_name = $("<td></td>", td_style).append($("<p></p>", p_style).html(product.product_name));
+                let td_name = $("<td></td>").html(product.product_name);
                 td_name.appendTo(tr);
-                let td_dcp = $("<td></td>", td_style).append($("<p></p>", p_style).html(product.description));
+                let td_dcp = $("<td></td>").html(product.description);
                 td_dcp.appendTo(tr);
 
-                let button = $("<button></button>", { type: "button", class: "btn btn-primary", id: product._id }).html("Sửa");
+                let button = $("<button></button>", { type: "button", class: "btn btn-primary btn-sm", id: product._id }).html("Chi tiết");
                 $(button).on('click', function () {
                     $.ajax({
                         url: '/api-get_product',
@@ -38,10 +40,10 @@ $(document).ready(function () {
                         }
                     })
                 })
-                let td_button = $("<td></td>").append(button);
+                let td_button = $("<td></td>",center).append(button);
                 td_button.appendTo(tr);
 
-                let del_button = $("<button></button>", { type: "button", class: "btn btn-danger", id: product._id }).html("Xóa");
+                let del_button = $("<button></button>", { type: "button", class: "btn btn-danger btn-sm", id: product._id }).html("Xóa");
                 $(del_button).on('click', function () {
                     // alert("!1")
 
@@ -71,7 +73,7 @@ $(document).ready(function () {
 
 
                 })
-                let td_del_button = $("<td></td>").append(del_button);
+                let td_del_button = $("<td></td>", center).append(del_button);
                 td_del_button.appendTo(tr);
 
 
