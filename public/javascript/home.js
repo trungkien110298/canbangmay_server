@@ -35,7 +35,7 @@ $(document).ready(function () {
                         data: JSON.stringify({ "product": { "_id": product._id } }),
                         dataType: 'json',
                         success: function (data) {
-                            localStorage.setItem('data', JSON.stringify(data));
+                            sessionStorage.setItem('data', JSON.stringify(data));
                             window.location.href = "/api-get_product"
                         }
                     })
@@ -84,7 +84,55 @@ $(document).ready(function () {
 
         }
     });
-
+    toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "1000",
+        "hideDuration": "1000",
+        "timeOut": "1000",
+        "extendedTimeOut": "5000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+    $("#new_product").click(function () {
+        bootbox.prompt({
+            size: "small",
+            title: "Nhập mã sản phẩm",
+            required: true,
+            callback: function (result) {
+                if (result != null){
+                    $.ajax({
+                        url: '/api-check_product_id',
+                        contentType: "application/json",
+                        method: 'POST',
+                        data: JSON.stringify({product_id: result}),
+                        dataType: 'json',
+                        success: function (data) {
+                            
+                            //bootbox.alert(data)
+                            if (data.code == "2")    {
+                                toastr.error('Mã sản phẩm đã tồn tại', 'Error!')
+                                $("#new_product").trigger("click");
+                            } else {
+                                sessionStorage.setItem('product_id', result)
+                                toastr.success('Tạo sản phẩm mới thành công', 'Success!')
+                                window.location.href = "/api-get_product"
+                                // bootbox.alert("Lưu thành công");
+                            }
+                        }
+                    })
+                }
+                
+            }
+        });
+    });
 });
 
 

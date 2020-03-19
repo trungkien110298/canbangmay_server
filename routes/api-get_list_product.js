@@ -5,7 +5,7 @@ var Product = require('../models/product')
 var api_get_list_product = express.Router();
 
 api_get_list_product.get('/api-get_list_product', (req, res) => {
-    var list_product = [];
+    console.log('/api-get_list_product');
     Product.find({}, function (err, products) {
         var list_product = [];
 

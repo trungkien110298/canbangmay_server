@@ -5,6 +5,7 @@ var Product = require("../models/product");
 var api_delete_product = express.Router();
 
 api_delete_product.post('/api-delete_product', (req, res) => {
+    console.log('/api-delete_product');
     _id = mongoose.Types.ObjectId(req.body.product._id)
     console.log("Delete product: " + _id)
     Product.deleteOne({ _id: _id }, function (err) {

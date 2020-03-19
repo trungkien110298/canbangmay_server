@@ -7,6 +7,7 @@ var Product = require("../models/product");
 var api_problem_2 = express.Router();
 
 api_problem_2.post('/api-problem_2', (req, res) => {
+    console.log('/api-problem_2');
     input_data = req.body.data;
     product_id = req.body.product_id
     product_name = req.body.product_name
@@ -56,6 +57,7 @@ api_problem_2.post('/api-problem_2', (req, res) => {
             var text = fs.readFileSync("./temp/output_p2.json");
             output_data = JSON.parse(text);
             output_data.NCCN = NCCN;
+            let R = output_data.R;
             output_data.rmin = parseInt(R) - parseInt(R) * deviation / 100;
             output_data.rmax = parseInt(R) + parseInt(R) * deviation / 100;
             text = JSON.stringify(output_data)

@@ -5,14 +5,17 @@ var Product = require("../models/product");
 var api_save_product = express.Router();
 
 api_save_product.post('/api-save_product', (req, res) => {
+    console.log('/api-save_product');
     var data = req.body.data;
     var product_id = req.body.product_id;
     var product_name = req.body.product_name;
     var description = req.body.description;
-
+    var tasks = data.tasks;
+    var precedence_relations = data.precedence_relations;
     
     var date = new Date();
     // console.log(product_id);
+    
     
     Product.findOne({ product_id: product_id }, function (err, product) {
         if (!product){ // This is new product
@@ -20,7 +23,8 @@ api_save_product.post('/api-save_product', (req, res) => {
                 product_id: product_id,
                 product_name: product_name,
                 description: description,
-                data: data
+                tasks: tasks,
+                precedence_relations: precedence_relations
             });
 
             // console.log(newProduct)
@@ -36,8 +40,10 @@ api_save_product.post('/api-save_product', (req, res) => {
     
             });
         } else {
-            console.log("Product existed")
-            res.status(200).send({ code: 1010, message: 'Product was existed' });
+            product.product_name = product_name;
+            product.description = description;
+            product.tasks = tasks;
+            product.precedence_relations = precedence_relations;
         }
     })
     

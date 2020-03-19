@@ -7,6 +7,7 @@ var Product = require("../models/product");
 var api_problem_1 = express.Router();
 
 api_problem_1.post('/api-problem_1', (req, res) => {
+    console.log('/api-problem_1');
     input_data = req.body.data;
     product_id = req.body.product_id
     product_name = req.body.product_name

@@ -10304,9 +10304,9 @@ button,
 }
 
 .app-header__logo .logo-src {
-    height: 23px;
-    width: 97px;
-    background: url(../images/logo-inverse.png)
+    height: 50px;
+    width: 156px;
+    background: url(../images/BKACG.png)
 }
 
 .app-header__menu,
@@ -10530,7 +10530,7 @@ button,
 }
 
 .app-header.header-text-dark .app-header__logo .logo-src {
-    background: url(../images/logo-inverse.png)
+    background: url(../images/BKACG.png)
 }
 
 .app-sidebar {
@@ -24627,3 +24627,22 @@ a.fc-more:hover {
 .hidden {
     display: none !important;
   }
+
+  
+.new-button{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0rem;
+    word-wrap: break-word;
+    background-color: var(--blue);
+    background-clip: border-box;
+    border: 1px solid rgba(26, 54, 126, 0.125);
+    border-radius: .25rem;
+    padding: 1rem;
+
+}
+
+.btn-long{
+    width: 100%;
+}

@@ -2,6 +2,25 @@ import { display_graph, display_chart } from './display.js';
 
 
 $(document).ready(function () {
+    toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "1000",
+        "hideDuration": "1000",
+        "timeOut": "1000",
+        "extendedTimeOut": "5000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+
+      
     $("#add_NCCN").on("click", function () {
         add_NCCN_row()
     });
@@ -86,10 +105,10 @@ $(document).ready(function () {
         
     });
 
-    let data = JSON.parse(localStorage.getItem('data'))
+    let data = JSON.parse(sessionStorage.getItem('data'))
     if (data) {
         // alert(JSON.stringify(data))
-        localStorage.removeItem('data')
+        //sessionStorage.removeItem('data')
 
         //Display data
         for (let i in data.input.NCCN) {
@@ -108,13 +127,13 @@ $(document).ready(function () {
     }
     else {
         // Add new row when open site
+        let product_id = sessionStorage.getItem('product_id')
+        //sessionStorage.removeItem('product_id')
+        $("#product_id").val(product_id)
+        $("#product_id").prop('disabled', true);
         $("#add_NCCN").trigger("click");
         $("#add_RBTT").trigger("click");
     }
-
-
-
-
 
 });
 
@@ -159,16 +178,19 @@ function add_NCCN_row() {
     });
 
     // add the new row
-    $(tr).appendTo($('#table_NCCN'));
+    let num_row = $('#table_NCCN tr').length - 2
+    let insertPost ='#table_NCCN tbody tr:nth(' + num_row + ')';
+    $(tr).insertBefore($(insertPost));
     renumber();
 
     $(tr).find("td button.row-remove").on("click", function () {
         $(this).closest("tr").remove();
         renumber();
     });
+
     function renumber() {
         var count = 0;
-        $.each($("#table_NCCN tr td h4"), function () {
+        $.each($("#table_NCCN tr td h5"), function () {
             $(this).html(count);
             count++;
         });
@@ -217,7 +239,9 @@ function add_RBTT_row() {
 
 
     // add the new row
-    $(tr).appendTo($('#table_RBTT'));
+    let num_row = $('#table_RBTT tr').length - 2
+    let insertPost ='#table_RBTT tbody tr:nth(' + num_row + ')';
+    $(tr).insertBefore($(insertPost));
 
     $(tr).find("td button.row-remove").on("click", function () {
         $(this).closest("tr").remove();

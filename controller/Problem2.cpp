@@ -44,6 +44,7 @@ struct group{
 int N, NConst, sailech;
 float R, Rmax, Rmin, RminNP = 0, totalTimeW = 0, RmaxNP = 0;
 task taskList[MAXN + 5];
+/// Biến edge_dp dùng để lưu lại các cạnh để gán lại, bởi vì các cạnh bị xóa sau mỗi lần tìm initialSolution.
 edge_du_phong edge_dp[MAXN + 5];
 group groupList[3*MAXN + 5];
 
@@ -72,17 +73,6 @@ void readInput(){
         edge_dp[u].edge.push_back(v); edge_dp[u].originEdge.push_back(v);
         edge_dp[v].revEdge.push_back(u);
     }
-
-    /*for(int type = 1; type <= 3; type++){
-        cin >> M;
-        while(M--){
-            string machine; cin >> machine;
-            for(int i = 1; i <= N; i++){
-                if(taskList[i].machine == machine) taskList[i].type = type;
-            }
-        }
-    }*/
-
 
 }
 
@@ -546,35 +536,22 @@ void caculate_R(float res)
     }
 }
 
-void ChatNhiPhanR(float RmaxNP,float RminNP){
+void BinarySearchR(float RmaxNP,float RminNP){
     while(RminNP < RmaxNP - 0.5)
     {
         resetAllVariable();
 
         caculate_R(round_float((RmaxNP + RminNP)/2));
-        //cout << "RmaxNP: " << RmaxNP << "  RminNP: " << RminNP << "  R: " << R << ", Rmax: " << Rmax << ",  Rmin: "<< Rmin <<endl;
-        //printSolution(finalRes);
-
         findSolution();
-        //cout <<  "Phuong an co so: " << endl;
-        //printSolution(finalRes);
         tuneSolution();
-        //cout <<  "Phuong an chot: " << endl;
-        //printSolution(finalRes);
-
         if (finalRes.workers <= NConst )
         {
-            //cout << "R: " << R << endl;
-            //cout << "Phuong an trung gian: " << endl;
-            //printSolution(finalRes);
             RmaxNP = R;
         }
         else RminNP ++;
     }
     caculate_R(globalRes.globalR);
-    //cout << "Phuong an cuoi cung: " << endl;
     printSolution(globalRes.globalFinalRes);
-
 }
 
 ///* Print final solution
@@ -607,7 +584,8 @@ void printSolution(solution finalRes){
     cout << 100.0 * (double)balancedGroups / (double)finalRes.groups.size() << "%" << endl;
 }
 */
-///* Print final solution
+
+///* Phan nay em viet de xuat dữ liệu cho Kiên đưa vào web
 
 bool checkConnect(solution finalRes, int u, int v){
     vector<int> groupu;
@@ -731,13 +709,13 @@ void line_arrangement(solution finalRes){
 
     for (int i = 1 ; i <= group_index; i++)
     {
-        /*
-        cout <<"\n" << i <<" " << groupList[i].index<< " is Start: " << groupList[i].isStart << " is End: " << groupList[i].isEnd << " degree: " << degree[i] << endl ;
-        for (int j = 0; j < groupList[i].edge.size(); j++){
-            cout << groupList[i].edge[j] << " ";
-        }
-        cout << endl;
-        */
+
+        //cout <<"\n" << i <<" " << groupList[i].index<< " is Start: " << groupList[i].isStart << " is End: " << groupList[i].isEnd << " degree: " << degree[i] << endl ;
+        //for (int j = 0; j < groupList[i].edge.size(); j++){
+        //    cout << groupList[i].edge[j] << " ";
+        //}
+        //cout << endl;
+
         if (degree[i] == 0)
         {
             arrange.push(i);
@@ -842,24 +820,20 @@ void printSolution(solution finalRes){
         if(i < (int)finalRes.groups.size() - 1) cout <<", ";
     }
 
+    float H;
+    if ((double)finalRes.groups.size() == 0) H = 0;
+    else H = 100.0 * (double)balancedGroups / (double)finalRes.groups.size();
     cout <<"], \"total_worker\": " <<totalWorkers << ",  \"total_save\": " << totalWorkerSaved << ",";
-    cout <<"\"H\": " << 100.0 * (double)balancedGroups / (double)finalRes.groups.size() << ",";
+    cout <<"\"H\": " << H << ",";
 
     line_arrangement(finalRes);
     cout << "}" << endl;
 }
 
+
 int main(){
     readInput();
-    /*R = RminNP;
-    findSolution();
-    cout << "R: " << R ;
-    cout << "\nPhuong an co so: \n";
-    printSolution(finalRes);
-    tuneSolution();
-    cout << "\nKet qua cuoi cung: \n";
-    printSolution(finalRes);
-    */
-    ChatNhiPhanR(RmaxNP, RminNP);
+    BinarySearchR(RmaxNP, RminNP);
     return 0;
 }
+

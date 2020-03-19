@@ -16,15 +16,26 @@ var ProductSchema = new Schema({
         type: String,
         required: false
     },
-    data:{
-        type: JSON,
-        required: false
-    }
+    tasks: [
+        {
+            task_id: String,
+            name: String,
+            time: Number,
+            divice: String,
+            type: Number,
+            level: Number
+        }
+    ],
+    precedence_relations:[
+        {
+            previous_task_id: String,
+            posterior_task_id: String
+        }
+    ]
 });
 
 ProductSchema.pre('save', function (next) {
-    var user = this;
-    
+    var product = this;
     next();
 });
 

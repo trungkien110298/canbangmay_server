@@ -19,6 +19,8 @@
     "datatables.net-dt": "^1.10.20",
     "ejs": "^2.7.1",
     "express": "^4.17.1",
+    "express-favicon": "^2.0.1",
+    "favicon": "0.0.2",
     "fs": "0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.8.3",

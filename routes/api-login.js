@@ -8,9 +8,8 @@ api_login.get('/api-login', function (req, res) {
     return res.render('login.html')
 });
 
-api_login.post('/login', function (req, res) {
-    console.log(req.body.phonenumber);
-    console.log(req.body.password);
+api_login.post('/api-login', function (req, res) {
+    console.log('/api-login');
     User.findOne({ phonenumber: req.body.phonenumber }, function (err, user) {
         if (err) throw err;
 
