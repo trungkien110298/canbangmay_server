@@ -8,7 +8,7 @@ var ProblemTwoSchema = new Schema({
         required: true
     },
     input: {
-        num_wokers:{ 
+        num_workers:{ 
             type: Number,
             required: true
         },
@@ -21,25 +21,23 @@ var ProblemTwoSchema = new Schema({
         workstations: [
             {
                 workstations_id: {
-                    type: String,
-                    required: true
+                    type:  String,
+                    require: true
                 },
-                tasks: [
-                    {
-                        tasks_id: {
-                            type: String,
-                            required: true
-                        },
-                        machine: {
-                            type: String,
-                            required: true
-                        },
-                        time: {
-                            type: Number,
-                            required: true
-                        }
+                tasks: [{
+                    tasks_id: {
+                        type: String,
+                        require: true
+                    },
+                    device: {
+                        type: String,
+                        require: true
+                    },
+                    cycle_time: {
+                        type: Number,
+                        require: true
                     }
-                ],
+                }],
                 level: {
                     type: Number,
                     require: true
@@ -48,17 +46,13 @@ var ProblemTwoSchema = new Schema({
                     type: Number,
                     require: true
                 },
-                num_wokers: {
-                    type: Number,
-                    require: true
-                },
-                Rj: {
+                rj: {
                     type: Number,
                     require: true
                 },
                 balance: {
                     type: Boolean,
-                    require: true
+                    require: false
                 }
             }
         ],

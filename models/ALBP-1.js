@@ -26,12 +26,79 @@ var ALBPOneSchema = new Schema({
         }
     },
     output: {
-        
+        num_workstations: {
+            type: Number
+        },
+        workstations: [
+            {
+                workstations_id: {
+                    type:  String,
+                    require: true
+                },
+                tasks: [{
+                    tasks_id: {
+                        type: String,
+                        require: true
+                    },
+                    device: {
+                        type: String,
+                        require: true
+                    },
+                    cycle_time: {
+                        type: Number,
+                        require: true
+                    }
+                }],
+                level: {
+                    type: Number,
+                    require: true
+                },
+                total_time: {
+                    type: Number,
+                    require: true
+                },
+                rj: {
+                    type: Number,
+                    require: true
+                },
+                balance: {
+                    type: Boolean,
+                    require: false
+                }
+            }
+        ],
+        total_worker: {
+            type: Number,
+            require: true
+        },
+        total_save: {
+            type: Number,
+            require: false
+        },
+        balance_efficiency: {
+            type: Number,
+            require: true
+        },
+        line_1: [
+            {
+                id: Number,
+                label: String
+            }
+        ],
+        line_2: [
+            {
+                id: Number,
+                label: String
+            }
+        ],
+        edges: [
+            {
+                u: Number,
+                v: Number
+            }
+        ]
     }
     
-    
-
-
 });
 
 ALBPOneSchema.pre('save', function (next) {

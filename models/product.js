@@ -20,10 +20,11 @@ var ProductSchema = new Schema({
         {
             task_id: String,
             name: String,
+            description: String,
+            device: String,
             time: Number,
-            divice: String,
-            type: Number,
-            level: Number
+            level: Number,
+            task_type: Number
         }
     ],
     precedence_relations:[
