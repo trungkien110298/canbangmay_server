@@ -1,5 +1,157 @@
+$(document).ready(function () {
+    toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "1000",
+        "hideDuration": "1000",
+        "timeOut": "3000",
+        "extendedTimeOut": "5000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+    $("#optimize").click(function () {
+        var tab_id = $("#problem li.active").attr('id');
+        // alert(tab_id);
+        if (tab_id == "p1") {
+            let req = get_data("problem1")
+            $.ajax({ 
+                url: '/api-problem_1',
+                contentType: "application/json",
+                method: 'POST',
+                data: JSON.stringify(req),
+                dataType: 'json',
+                success: function (data) {
+                    display_result(data)
+                }
+            })
+        } else {
+            let req = get_data("problem2")
+            $.ajax({
+                url: '/api-problem_2',
+                contentType: "application/json",
+                method: 'POST',
+                data: JSON.stringify(req),
+                dataType: 'json',
+                success: function (data) {
+                    display_result(data)
+                }
+            })
+        }
 
-export function display_graph(group_data) {
+
+    });
+}
+
+
+function display_result(data) {
+    // Reset display
+    $("#workstations-table tbody").html(" ");
+    $("#cycle_time-chart").html(" ");
+    $("#assembly_line-graph").html(" ");
+    $("#workstations").css("display", "");
+    $("#cycle_time").css("display", "");
+    $("#assembly_line").css("display", "");
+
+    //Get data output
+    let num_group = data.Numgroups;
+    let groups = data.Groups;
+    var dataPoints = []
+    var dataPoints_rmax = data.rmax;
+    var dataPoints_rmin = data.rmin;
+    var list_NCCN = data.NCCN;
+
+    //Display
+    display_table()
+    display_chart(dataPoints, dataPoints_rmax, dataPoints_rmin)
+    display_graph(data)
+
+    // var wb = XLSX.utils.table_to_book(document.getElementById('table-result'), { sheet: "Sheet JS" });
+    // var wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'binary' });
+    // function s2ab(s) {
+    //     var buf = new ArrayBuffer(s.length);
+    //     var view = new Uint8Array(buf);
+    //     for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+    //     return buf;
+    // }
+    // $("#download").click(function () {
+    //     saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'ALBS.xlsx');
+    //     // html2canvas($("#echarts"), {
+    //     //     onrendered: function(canvas) {
+    //     //       Canvas2Image.saveAsPNG(canvas);
+    //     //     }
+    //     // });
+    // });
+}
+
+function display_table() {
+    for (let i in groups) {
+        let group = groups[i];
+        let num_nccn = group.tasks.length;
+        let rows = [];
+        dataPoints.push(group.Rj)
+
+        for (let j = 0; j < num_nccn; j++) {
+            let tr = $("<tr></tr>");
+            rows.push(tr);
+        }
+
+
+        let td_id = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+            .append($("<p></p>", { class: "text-center" }).html(group.id));
+        rows[0].append(td_id)
+
+
+        for (let task in group.tasks) {
+            let nccn = group.tasks[task];
+
+            let td_task = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(nccn.task));
+            td_task.appendTo(rows[task]);
+
+            let td_NCCN = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(list_NCCN[parseInt(nccn.task) - 1].name));
+            td_NCCN.appendTo(rows[task]);
+
+
+            let td_machine = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(nccn.machine));
+            td_machine.appendTo(rows[task]);
+
+
+            let td_ti = $("<td></td>").append($("<p></p>", { class: "text-center" }).html(nccn.ti));
+            td_ti.appendTo(rows[task]);
+
+        }
+
+        let td_time = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+            .append($("<p></p>", { class: "text-center" }).html(group.total_time));
+        rows[0].append(td_time);
+
+        let td_level = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+            .append($("<p></p>", { class: "text-center" }).html(group.level));
+        rows[0].append(td_level);
+
+        let td_workers = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+            .append($("<p></p>", { class: "text-center" }).html(group.workers));
+        rows[0].append(td_workers);
+
+        let td_Rj = $("<td></td>", { rowspan: num_nccn, style: "vertical-align: middle" })
+            .append($("<p></p>", { class: "text-center" }).html(group.Rj));
+        rows[0].append(td_Rj)
+
+
+        for (let j in rows) {
+            $("#table-result tbody").append(rows[j])
+
+        }
+    }
+}
+
+function display_graph(group_data) {
     let array1 = group_data.array1;
     let array2 = group_data.array2;
     let list_edge = group_data.edge;
@@ -145,7 +297,7 @@ export function display_graph(group_data) {
 
 }
 
-export function display_chart(data_points, data_points_rmax, data_points_rmin) {
+function display_chart(data_points, data_points_rmax, data_points_rmin) {
     var label = [];
     var rmin = [];
     var rmax = [];

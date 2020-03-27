@@ -115,23 +115,28 @@
             <div class="card-header">
 
               <ul class="nav nav-justified">
-                <li class="nav-item"><a data-toggle="tab" href="#tab-0" class="active nav-link">Chi tiết sản
-                    phẩm</a></li>
-                <li class="nav-item"><a data-toggle="tab" href="#tab-1" class="nav-link">Nguyên công công nghệ</a>
+                <li class="nav-item"><a data-toggle="tab" href="#tab-0" class="active nav-link">
+                    <b>Chi tiết sảnphẩm</b></a></li>
+                <li class="nav-item"><a data-toggle="tab" href="#tab-1" class="nav-link">
+                    <b>Nguyên công công nghệ</b></a>
                 </li>
-                <li class="nav-item"><a data-toggle="tab" href="#tab-2" class="nav-link">Ràng buộc trình tự</a></li>
+                <li class="nav-item"><a data-toggle="tab" href="#tab-2" class="nav-link">
+                    <b>Ràng buộc trình tự</b></a>
+                </li>
               </ul>
             </div>
 
 
             <div class="card-body">
               <div class="tab-content">
+
                 <div class="tab-pane active" id="tab-0" role="tabpanel">
-                  <form class="">
+                  <form>
                     <div class="position-relative row form-group"><label for="product_id"
                         class="col-sm-2 col-form-label">Mã sản phẩm</label>
                       <div class="col-sm-5"><input name="product_id" id="product_id" class="form-control"></div>
                     </div>
+
                     <div class="position-relative row form-group"><label for="product_name"
                         class="col-sm-2 col-form-label">Tên sản phẩm</label>
                       <div class="col-sm-5"><input name="product_name" id="product_name" class="form-control"></div>
@@ -139,15 +144,16 @@
 
                     <div class="position-relative row form-group"><label for="description"
                         class="col-sm-2 col-form-label">Mô tả sản phẩm</label>
-                      <div class="col-sm-5"><textarea name="description" id="description" class="form-control"></textarea>
+                      <div class="col-sm-5"><textarea name="description" id="description"
+                          class="form-control"></textarea>
                       </div>
                     </div>
-
                   </form>
                 </div>
+
                 <div class="tab-pane" id="tab-1" role="tabpanel">
-                  <table class="mb-0 table table-striped table-bordered" id="table_NCCN">
-                    <thead>
+                  <table class="mb-0 table table-striped table-bordered" id="tasks">
+                    <thead class="thead-light">
                       <tr>
                         <th class="text-center">
                           #
@@ -170,22 +176,21 @@
                         <th class="text-center">
                           Loại NCCN
                         </th>
-                        
                         <th class="text-center">
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr id='addr0' data-id="0" class="hidden">
-                        <td data-name="name">
-                          <h5 class="text-center">0</h5>
+                      <tr id='addr0' data-id="0" task_id="0" class="hidden">
+                        <td data-name="task_order">
+                          <h6 class="text-center">0</h6>
                         </td>
                         <td data-name="name">
                           <input type="text" name='name' placeholder='Nguyên công công nghệ'
-                            class="form-control form-control-sm" />
+                            class="task_name form-control form-control-sm" />
                         </td>
-                        <td data-name="descript">
-                          <input type="text" name='descript' placeholder='Mô tả'
+                        <td data-name="description">
+                          <input type="text" name='description' placeholder='Mô tả'
                             class="form-control form-control-sm" />
                         </td>
                         <td data-name="device">
@@ -199,39 +204,38 @@
                         </td>
                         <td data-name="level">
                           <select name="level" class="col-md-12 select2_group form-control form-control-sm">
-                            <option value="1">Bậc 1</option>
-                            <option value="2">Bậc 2</option>
-                            <option value="3">Bậc 3</option>
-                            <option value="4">Bậc 4</option>
-                            <option value="5">Bậc 5</option>
-                            <option value="5">Bậc 6</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="5">6</option>
                           </select>
                         </td>
-                        <td data-name="kind">
-                          <select name="kind" class="col-md-12 select2_group form-control form-control-sm">
-                            <option value="1">Loại 1</option>
-                            <option value="2">Loại 2</option>
-                            <option value="3">Loại 3</option>
+                        <td data-name="task_type">
+                          <select name="task_type" class="col-md-12 select2_group form-control form-control-sm">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
                           </select>
                         </td>
-                        
+
                         <td data-name="del">
-                          <button name="del0" class='btn btn-danger btn-sm row-remove'>Xóa</button>
+                          <button name="del" class='btn btn-danger btn-sm row-remove'>Xóa</button>
                         </td>
                       </tr>
                       <tr class="bg-light">
                         <td colspan="7"></td>
-                        <td><button type="button" id="add_NCCN" class="btn btn-primary btn-sm">Thêm</button></td>
+                        <td><button type="button" id="add_task" class="btn btn-primary btn-sm">Thêm</button></td>
                       </tr>
                     </tbody>
-                    
                   </table>
-
-                  
                 </div>
+
+                
                 <div class="tab-pane" id="tab-2" role="tabpanel">
-                  <table class="mb-0 table table-striped table-bordered" id="table_RBTT">
-                    <thead>
+                  <table class="mb-0 table table-striped table-bordered" id="precedence_relations">
+                    <thead class="thead-light">
                       <tr>
                         <th class="text-center">
                           NCCN thực hiện trước
@@ -244,25 +248,27 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr id='addr0' data-id="0" class="hidden">
-                        <td data-name="NCCN-1">
-                          <input type="number" name='NCCN-1' class="form-control form-control-sm" />
+                      <tr id='pr0' data-id="0" class="hidden">
+                        <td data-name="previous_task">
+                          <select name="previous_task" class="col-md-12 select2_group form-control form-control-sm">
+                          </select>
                         </td>
-                        <td data-name="NCCN-2">
-                          <input type="number" name='NCCN-2' class="form-control form-control-sm" />
+                        <td data-name="posterior_task">
+                          <select name="posterior_task" class="col-md-12 select2_group form-control form-control-sm">
+                          </select>
                         </td>
                         <td data-name="del">
-                          <button name="del0" class='btn btn-danger btn-sm row-remove'> Xóa</button>
+                          <button name="del" class='btn btn-danger btn-sm row-remove'> Xóa</button>
                         </td>
                       </tr>
                       <tr class="bg-light">
                         <td colspan="2"></td>
-                        <td><button type="button" id="add_RBTT" class="btn btn-primary btn-sm">Thêm</button></td>
+                        <td><button type="button" id="add_relation" class="btn btn-primary btn-sm">Thêm</button></td>
                       </tr>
                     </tbody>
                   </table>
 
-                  
+
                 </div>
               </div>
             </div>
@@ -271,7 +277,7 @@
                 class="btn-wide btn btn-success btn-lg mt-1 mb-1">Lưu</a>
               <!-- <a href="javascript:void(0);" id="save_as" type="button"
                 class="btn-wide btn btn-primary btn-lg mt-1 mb-1">Save As</a> -->
-                <!-- <a href="javascript:void(0);" id="save_as" type="button"
+              <!-- <a href="javascript:void(0);" id="save_as" type="button"
                 class="btn-wide btn btn-light btn-lg mt-1 mb-1">Tối ưu</a> -->
             </div>
           </div>
@@ -282,15 +288,15 @@
                 <i class="pe-7s-next ml-3"></i></a>
             </div>
           </div>
-         
-          
-        
+
+
+
 
 
         </div>
-        
+
       </div>
-      
+
     </div>
   </div>
   <script type="text/javascript" src="javascript/main.js"></script>

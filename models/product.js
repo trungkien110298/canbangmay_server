@@ -19,6 +19,7 @@ var ProductSchema = new Schema({
     tasks: [
         {
             task_id: String,
+            task_order: Number,
             name: String,
             description: String,
             device: String,

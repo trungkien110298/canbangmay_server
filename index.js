@@ -29,12 +29,12 @@ app.use('/bower_components', express.static(__dirname + '/bower_components'));
 
 //body Parser
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // ----------------- Router ---------------------------------- //
 
 app.get('/', function (req, res) {
-    return res.render('home_fix.html');
+    return res.render('home.html');
 });
 
 app.get('/problem', function (req, res) {
