@@ -17,6 +17,44 @@ $(document).ready(function() {
 		hideMethod: "fadeOut"
 	};
 
+	var product = JSON.parse(sessionStorage.getItem("product"));
+	if (!product) {
+		//TODO: product
+		bootbox.prompt({
+			size: "small",
+			title: "Nhập mã sản phẩm",
+			required: true,
+			callback: function(result) {
+				if (result != null) {
+					$.ajax({
+						url: "/api-check_product_id",
+						contentType: "application/json",
+						method: "POST",
+						data: JSON.stringify({ product_id: result }),
+						dataType: "json",
+						success: function(data) {
+							if (data.code == "2") {
+								toastr.error("Mã sản phẩm đã tồn tại", "Error!");
+								$("#new_product").trigger("click");
+							} else {
+								product = { product_id: result };
+								sessionStorage.setItem("product", product);
+								toastr.success("Tạo sản phẩm mới thành công", "Success!");
+							}
+						}
+					});
+				}
+			}
+		});
+
+		//Display data
+
+		add_task_row();
+		add_relation_row();
+	} else {
+		display_data(product);
+	}
+
 	$("#add_task").on("click", function() {
 		add_task_row();
 	});
@@ -67,98 +105,49 @@ $(document).ready(function() {
 	// 		}
 	// 	});
 	// });
-
-	var product = JSON.parse(sessionStorage.getItem("product"));
-	if (!product) {
-		//TODO: product
-		bootbox.prompt({
-			size: "small",
-			title: "Nhập mã sản phẩm",
-			required: true,
-			callback: function(result) {
-				if (result != null) {
-					$.ajax({
-						url: "/api-check_product_id",
-						contentType: "application/json",
-						method: "POST",
-						data: JSON.stringify({ product_id: result }),
-						dataType: "json",
-						success: function(data) {
-							if (data.code == "2") {
-								toastr.error("Mã sản phẩm đã tồn tại", "Error!");
-								$("#new_product").trigger("click");
-							} else {
-								product = { product_id: result };
-								sessionStorage.setItem("product", product);
-								toastr.success("Tạo sản phẩm mới thành công", "Success!");
-							}
-						}
-					});
-				}
-			}
-		});
-
-		//Display data
-
-		$("#add_task").trigger("click");
-		$("#add_relation").trigger("click");
-	} else {
-		display_data(product);
-	}
-
-	
 	// $("#tasks").on("update", function(){
 	// 	alert("Table change!")
 	// })
 });
 
+// Reorder task and update id_order when a task be deleted
+function reorder_tasks() {
+	var count_task = 0;
+	$.each($("#tasks tbody tr"), function() {
+		let task_id = $(this).attr("task_id");
+		if (task_id) {
+		
+			$(this)
+				.find("td h6")
+				.html(count_task);
+			count_task++;
+		}
+	});
+}
+
+function update_local_product() {
+	let product = get_data();
+	sessionStorage.setItem("product", JSON.stringify(product));
+}
+
 function add_task_row() {
-	var newid = 0;
-
-	$.each($("#tasks tr"), function() {
-		if (parseInt($(this).data("id")) > newid) {
-			newid = parseInt($(this).data("id"));
-		}
-	});
-	newid++;
-
+	let num_tasks = $("#tasks tbody tr").length - 2; //Ignore 2 row
+	let new_task_order = ++num_tasks;
+	let task_id = Date.now();
 	var tr = $("<tr></tr>", {
-		id: "addr" + newid,
-		"data-id": newid,
-		task_id: Date.now()
+		task_id: task_id,
+		order: new_task_order
 	});
 
-	// loop through each td and create new elements with name of newid
+	// loop through each td and create new elements with name of new_order
 	$.each($("#tasks tbody tr:nth(0) td"), function() {
-		var td;
-		var cur_td = $(this);
-
-		var children = cur_td.children();
-
+		let cur_td = $(this);
 		// add new td and element if it has a nane
-		if ($(this).data("name") !== undefined) {
-			td = $("<td></td>", {
-				"data-name": $(cur_td).data("name")
-			});
-
-			var c = $(cur_td)
-				.find($(children[0]).prop("tagName"))
-				.clone()
-				.val("");
-			c.attr("name", $(cur_td).data("name"));
-			c.appendTo($(td));
-			td.appendTo($(tr));
-		} else {
-			td = $("<td></td>", {
-				text: $("#tasks tr").length
-			}).appendTo($(tr));
-		}
+		let td = $(cur_td)
+			.clone()
+			.val("");
+		td.appendTo($(tr));
 	});
-
-	// add the new row
-	let num_row = $("#tasks tr").length - 2;
-	let insertPost = "#tasks tbody tr:nth(" + num_row + ")";
-	$(tr).insertBefore($(insertPost));
 
 	$(tr)
 		.find("td button.row-remove")
@@ -167,69 +156,74 @@ function add_task_row() {
 				.closest("tr")
 				.remove();
 			reorder_tasks();
-			update_precedence_relations_option();
+
+			delete_precedence_relations_option(
+				$(this)
+					.closest("tr")
+					.attr("task_id")
+			);
+			update_local_product();
 		});
-	$(tr).find("td h6").html(num_row)
-	$(".task_name").change(function() {
-		let product = get_data();
-		sessionStorage.setItem("product", JSON.stringify(product));
-		update_precedence_relations_option();
+	$(tr)
+		.find("select")
+		.val("");
+	$(tr)
+		.find("td h6")
+		.html(new_task_order);
+
+	// Update local product when a task change
+	$(tr).change(function() {
+		update_local_product();
 	});
+
+	$(".task_name", tr).change(function(){
+		update_precedence_relations_option($(tr).attr("task_id"), $(this).val());
+	})
+	
+	// Add id_oder and option
+	add_precedence_relations_option(task_id);
+
+	// add the new row
+	let insertPost = "#tasks tbody tr:nth(" + num_tasks + ")";
+	$(tr).insertBefore($(insertPost));
 }
 
 function add_relation_row() {
-	var newid = 0;
-	$.each($("#precedence_relations tr"), function() {
-		if (parseInt($(this).data("id")) > newid) {
-			newid = parseInt($(this).data("id"));
-		}
-	});
-	newid++;
-
-	var tr = $("<tr></tr>", {
-		id: "addr" + newid,
-		"data-id": newid
-	});
-
-	// loop through each td and create new elements with name of newid
-	$.each($("#precedence_relations tbody tr:nth(0) td"), function() {
-		var td;
-		var cur_td = $(this);
-
-		var children = cur_td.children();
-
-		// add new td and element if it has a nane
-		if ($(this).data("name") !== undefined) {
-			td = $("<td></td>", {
-				"data-name": $(cur_td).data("name")
-			});
-
-			var c = $(cur_td)
-				.find($(children[0]).prop("tagName"))
-				.clone()
-				.val("");
-			c.attr("name", $(cur_td).data("name"));
-			c.appendTo($(td));
-			td.appendTo($(tr));
-		} else {
-			td = $("<td></td>", {
-				text: $("#precedence_relations tr").length
-			}).appendTo($(tr));
-		}
-	});
-
 	// add the new row
-	let num_row = $("#precedence_relations tr").length - 2;
-	let insertPost = "#precedence_relations tbody tr:nth(" + num_row + ")";
-	$(tr).insertBefore($(insertPost));
+	let num_relations = $("#precedence_relations tbody tr").length - 2;
+	let new_relation_order = ++num_relations;
+	var tr = $("<tr></tr>", {
+		order: new_relation_order
+	});
 
+	// loop through each td and create new elements with name of new_order
+	$.each($("#precedence_relations tbody tr:nth(0) td"), function() {
+		let cur_td = $(this);
+		// add new td and element if it has a nane
+		let td = $(cur_td)
+			.clone()
+			.val("");
+		td.appendTo($(tr));
+	});
+
+	$(tr)
+		.find("select")
+		.val("");
 	$(tr)
 		.find("td button.row-remove")
 		.on("click", function() {
 			$(this)
 				.closest("tr")
 				.remove();
+
+			update_local_product();
 		});
+	$(tr).change(function() {
+		update_local_product();
+	});
+
+	let insertPost = "#precedence_relations tbody tr:nth(" + num_relations + ")";
+	$(tr).insertBefore($(insertPost));
 }
 
 function display_data(product) {
@@ -248,9 +242,11 @@ function display_data(product) {
 		for (let i in tasks) {
 			add_task_row();
 		}
+
 		$("#tasks tbody tr").each(function() {
-			if (parseInt($(this).data("id")) > 0) {
-				let i = parseInt($(this).data("id")) - 1;
+			if (parseInt($(this).attr("order")) > 0) {
+				let i = parseInt($(this).attr("order")) - 1;
+
 				$(this).attr("task_id", tasks[i].task_id);
 				$(this)
 					.find(':input[name = "name"]')
@@ -272,7 +268,7 @@ function display_data(product) {
 					.val(tasks[i].level);
 			}
 		});
-		reorder_tasks();
+		//reorder_tasks();
 		// update_precedence_relations_option();
 	} else {
 		add_task_row();
@@ -280,24 +276,13 @@ function display_data(product) {
 
 	if (product.precedence_relations && product.tasks) {
 		let precedence_relations = product.precedence_relations;
-		let tasks = product.tasks;
-		$("#pr0 td select").each(function() {
-			for (let t in tasks) {
-				let task = tasks[t];
-
-				let option = $("<option></option>", {
-					value: task.task_id
-				});
-				option.html(task.name);
-				$(this).append(option);
-			}
-		});
+		set_precedence_relations_option(product);
 		for (let i in precedence_relations) {
 			add_relation_row();
 		}
 		$("#precedence_relations tbody tr").each(function() {
-			if (parseInt($(this).data("id")) > 0) {
-				let i = parseInt($(this).data("id")) - 1;
+			if (parseInt($(this).attr("order")) > 0) {
+				let i = parseInt($(this).attr("order")) - 1;
 				$(this)
 					.find(':input[name = "previous_task"]')
 					.val(precedence_relations[i].previous_task_id);
@@ -326,7 +311,7 @@ function get_data() {
 	// }
 
 	$("#tasks tbody tr").each(function() {
-		if (parseInt($(this).data("id")) > 0) {
+		if (parseInt($(this).attr("order")) > 0) {
 			let task_id = $(this).attr("task_id");
 			let task_order = $(this)
 				.find("h6")
@@ -370,7 +355,7 @@ function get_data() {
 		}
 	});
 	$("#precedence_relations tbody tr").each(function() {
-		if (parseInt($(this).data("id")) > 0) {
+		if (parseInt($(this).attr("order")) > 0) {
 			let previous_task_id = $(this)
 				.find(':input[name = "previous_task"]')
 				.val();
@@ -392,34 +377,59 @@ function get_data() {
 	return product;
 }
 
-function reorder_tasks() {
-	var count = 0;
-	var id_order = {};
-	$.each($("#tasks tbody tr"), function() {
-		let task_id = $(this).attr("task_id");
-		if (task_id) {
-			id_order[task_id] = count;	
-			$(this)
-				.find("td h6")
-				.html(count);
-			count++;
+function set_precedence_relations_option(product) {
+	let tasks = product.tasks;
+	$("#pr0 td select").each(function() {
+		$(this).html(" ");
+		for (let t in tasks) {
+			let task = tasks[t];
+
+			let option = $("<option></option>", {
+				value: task.task_id
+			});
+			option.html(task.name);
+			$(this).append(option);
 		}
+		$(this).val("");
 	});
-	sessionStorage.setItem("id_order", JSON.stringify(id_order));
 }
 
-function update_precedence_relations_option() {
-	// $("#precedence_relations tbody").html(" ");
-	let product = JSON.parse(sessionStorage.getItem("product"));
-	let tasks = product.tasks;
-	let id_order = JSON.parse(sessionStorage.getItem("id_order"));
-	$("#precedence_relations tbody td select option").each(function() {
-		let task_id = $(this).attr("value");
-		let task_order = id_order[task_id];
-		if (!task_order) {
-			$(this).remove();
-		} else {
-			$(this).html(tasks[task_order - 1].name);
+function add_precedence_relations_option(task_id) {
+	$("#precedence_relations select").each(function() {
+		let option = $("<option></option>", {
+			value: task_id
+		});
+		$(this).append(option);
+	});
+}
+
+function delete_precedence_relations_option(task_id) {
+	$("#precedence_relations tbody tr").each(function() {
+		if ($(this).attr("order")) {
+			let previous_task_id = $(this)
+				.find(':input[name = "previous_task"]')
+				.val();
+			let posterior_task_id = $(this)
+				.find(':input[name = "posterior_task"]')
+				.val();
+			if (posterior_task_id == task_id || previous_task_id == task_id) {
+				// Delete relations have task just be deleted
+				$(this).remove();
+			}
+			$("option", this).each(function() {
+				if ($(this).val() == task_id){
+					$(this).remove();
+				}
+			});
+		}
+	});
+}
+
+function update_precedence_relations_option(task_id, task_name) {
+	alert(task_name + " " + task_id)
+	$("#precedence_relations option").each(function() {
+		if ($(this).val() == task_id) {
+			$(this).html(task_name);
 		}
 	});
 }
