@@ -43,8 +43,8 @@ task taskList[MAXN + 5];
 group groupList[3*MAXN + 5];
 
 void readInput(){
-    freopen("../temp/input_p1.txt", "r", stdin);
-    freopen("../temp/output_p1.json", "w", stdout);
+    freopen("../.temp/input.txt", "r", stdin);
+    freopen("../.temp/output.json", "w", stdout);
 
     cin >> N >> R >> sailech;
 
@@ -114,8 +114,8 @@ set<int> groupElements;
 
 bool dfs1(int u, int rev){
     if(rev == -1
-        && groupElements.find(u) == groupElements.end()
-        && reachableTasks.find(u) != reachableTasks.end())
+       && groupElements.find(u) == groupElements.end()
+       && reachableTasks.find(u) != reachableTasks.end())
         return true;
 
     reachableTasks.insert(u * rev);

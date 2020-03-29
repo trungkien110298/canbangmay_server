@@ -116,7 +116,6 @@ function reorder_tasks() {
 	$.each($("#tasks tbody tr"), function() {
 		let task_id = $(this).attr("task_id");
 		if (task_id) {
-		
 			$(this)
 				.find("td h6")
 				.html(count_task);
@@ -176,11 +175,11 @@ function add_task_row() {
 		update_local_product();
 	});
 
-	$(".task_name", tr).change(function(){
+	$(".task_name", tr).change(function() {
 		update_precedence_relations_option($(tr).attr("task_id"), $(this).val());
-	})
-	
-	// Add id_oder and option
+	});
+
+	// Add id_order and option
 	add_precedence_relations_option(task_id);
 
 	// add the new row
@@ -275,7 +274,9 @@ function display_data(product) {
 	}
 
 	if (product.precedence_relations && product.tasks) {
+		let tasks = product.tasks;
 		let precedence_relations = product.precedence_relations;
+		display_graph(tasks, precedence_relations);
 		set_precedence_relations_option(product);
 		for (let i in precedence_relations) {
 			add_relation_row();
@@ -298,17 +299,6 @@ function display_data(product) {
 
 function get_data() {
 	let product = { tasks: [], precedence_relations: [] };
-	// if (problem == "problem1") {
-	//     let time = parseInt($("#time").val()) * 3600
-	//     let deviation = $("#deviation").val()
-	//     let wattage = $("#wattage").val()
-	//     let r = $("#R").val()
-	//     data = { "NCCN": [], "RBTT": [], "time": time, "deviation": deviation, "wattage": wattage, "R": r }
-	// } else {
-	//     let deviation = $("#deviation2").val()
-	//     let num_worker = $("#num_worker").val()
-	//     data = { "NCCN": [], "RBTT": [], "deviation": deviation, "num_worker": num_worker }
-	// }
 
 	$("#tasks tbody tr").each(function() {
 		if (parseInt($(this).attr("order")) > 0) {
@@ -417,7 +407,7 @@ function delete_precedence_relations_option(task_id) {
 				$(this).remove();
 			}
 			$("option", this).each(function() {
-				if ($(this).val() == task_id){
+				if ($(this).val() == task_id) {
 					$(this).remove();
 				}
 			});
@@ -426,10 +416,67 @@ function delete_precedence_relations_option(task_id) {
 }
 
 function update_precedence_relations_option(task_id, task_name) {
-	alert(task_name + " " + task_id)
 	$("#precedence_relations option").each(function() {
 		if ($(this).val() == task_id) {
 			$(this).html(task_name);
 		}
 	});
+}
+
+function display_graph(tasks, precedence_relations) {
+	let data = { nodes: [], edges: [] };
+	for (let t in tasks) {
+		let task = tasks[t];
+		data.nodes.push({ id: task.task_id, label: task.task_order.toString() });
+	}
+
+	for (let pr in precedence_relations) {
+		let rela = precedence_relations[pr];
+		data.edges.push({
+			source: rela.previous_task_id,
+			target: rela.posterior_task_id
+		});
+	}
+
+	//const width = document.getElementById("graph").scrollWidth;
+	//const height = document.getElementById("graph").scrollHeight || 500;
+	let width = document.getElementById("graph_rl").scrollWidth;
+	let height = 500;
+	const graph = new G6.Graph({
+		container: "graph",
+		width,
+		height,
+		fitView: false,
+		modes: {
+			default: ["drag-canvas",  "zoom-canvas", "click-select"]
+		},
+		layout: {
+			type: "dagre",
+			rankdir: "LR",
+			align: "DL",
+			nodesepFunc: () => 1,
+			ranksepFunc: () => 1
+		},
+		defaultNode: {
+			size: [30, 20],
+			type: "rect",
+			style: {
+				lineWidth: 2,
+				stroke: "#5B8FF9",
+				fill: "#C6E5FF"
+			}
+		},
+		defaultEdge: {
+			size: 1,
+			color: "#e2e2e2",
+			style: {
+				endArrow: {
+					path: "M 0,0 L 8,4 L 8,-4 Z",
+					fill: "#e2e2e2"
+				}
+			}
+		}
+	});
+	graph.data(data);
+	graph.render();
 }
