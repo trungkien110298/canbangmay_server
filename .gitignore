@@ -3,3 +3,4 @@ controller/Problem1.exe
 controller/Problem1
 /temp
 bower_components
+*.exe
