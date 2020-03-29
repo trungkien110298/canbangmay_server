@@ -120,7 +120,7 @@
 					<div class="main-card mb-3 card">
 						<div class="card-header">
 
-							<ul class="nav nav-justified">
+							<ul class="nav nav-justified" id="problem_tab">
 								<li class="nav-item"><a data-toggle="tab" href="#tab-0" class="active nav-link">
 										<b> Tối ưu theo nhịp dây chuyền</b></a></li>
 								<li class="nav-item"><a data-toggle="tab" href="#tab-1" class="nav-link">
@@ -161,16 +161,16 @@
 									<form class="">
 										<div class="position-relative row form-group"><label for="exampleEmail"
 												class="col-sm-2 col-form-label">Sai lệch giới hạn nhịp</label>
-											<div class="col-sm-5"><select id="deviation" class="select2_group form-control">
+											<div class="col-sm-5"><select id="p2_deviation" class="select2_group form-control">
 													<option value="" selected disabled hidden></option>
 													<option value="5">5%</option>
 													<option value="10">10%</option>
 													<option value="15">15%</option>
 												</select></div>
 										</div>
-										<div class="position-relative row form-group"><label for="examplePassword"
+										<div class="position-relative row form-group"><label 
 												class="col-sm-2 col-form-label">Số công nhân</label>
-											<div class="col-sm-5"><input name="password" type="number" class="form-control"></div>
+											<div class="col-sm-5"><input id="p2_num_workers" class="form-control"></div>
 										</div>
 
 
@@ -181,9 +181,9 @@
 
 						</div>
 						<div class="d-block text-right card-footer">
-							<button href="javascript:void(0);" id="optimize_1" type="button"
+							<button href="javascript:void(0);" id="optimize" type="button"
 								class="btn-wide btn btn-primary btn-lg mt-1 mb-1">Tối ưu</button>
-							<a href="javascript:void(0);" id="save_problem_1" type="button"
+							<a href="javascript:void(0);" id="save" type="button"
 								class="btn-wide btn btn-success btn-lg mt-1 mb-1">Lưu</a>
 
 
@@ -199,8 +199,7 @@
 							</div>
 						</div>
 						<div class="card-body">
-							<table id="workstations-table"
-								class="table table-striped table-bordered">
+							<table id="workstations-table" class="table table-striped table-bordered">
 								<thead>
 									<tr>
 										<th class="text-center">

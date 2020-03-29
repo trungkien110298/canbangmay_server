@@ -16,36 +16,67 @@ $(document).ready(function() {
 		showMethod: "fadeIn",
 		hideMethod: "fadeOut"
 	};
-	$("#optimize_1").click(function() {
-		let time = parseInt($("#p1_time").val()) * 3600;
-		let deviation = $("#p1_deviation").val();
-		let wattage = $("#p1_wattage").val();
-		let cycle_time = $("#p1_cycle_time").val();
-		let product = JSON.parse(sessionStorage.getItem("product"));
-		let product_id = product.product_id;
-		let problem = {
-			time: time,
-			deviation: deviation,
-			wattage: wattage,
-			cycle_time: cycle_time
-		};
-		let req = {
-			product: product,
-			problem: problem
-		};
-		sessionStorage.setItem("problem_1", problem);
+	$("#optimize").click(function() {
+		var tab_id = $("#problem_tab li.active").attr("id");
+		if (tab_id == "tab-0") {
+			let time = parseInt($("#p1_time").val()) * 3600;
+			let deviation = $("#p1_deviation").val();
+			let wattage = $("#p1_wattage").val();
+			let cycle_time = $("#p1_cycle_time").val();
+			let product = JSON.parse(sessionStorage.getItem("product"));
+			let product_id = product.product_id;
+			let problem = {
+				time: time,
+				deviation: deviation,
+				wattage: wattage,
+				cycle_time: cycle_time
+			};
+			let req = {
+				product: product,
+				problem: problem
+			};
+			sessionStorage.setItem("problem_1", problem);
 
-		$.ajax({
-			url: "/api-problem_1",
-			contentType: "application/json",
-			method: "POST",
-			data: JSON.stringify(req),
-			dataType: "json",
-			success: function(data) {
-				toastr.success("Tối ưu thành công", "Success!");
-				display_result(data);
-			}
-		});
+			$.ajax({
+				url: "/api-problem_1",
+				contentType: "application/json",
+				method: "POST",
+				data: JSON.stringify(req),
+				dataType: "json",
+				success: function(data) {
+					toastr.success("Tối ưu thành công", "Success!");
+					display_result(data);
+				}
+			});
+		} else {
+			let time = parseInt($("#p2_time").val()) * 3600;
+			let deviation = $("#p2_deviation").val();
+			let num_workers = $("#p2_num_workers").val();
+			let product = JSON.parse(sessionStorage.getItem("product"));
+			let product_id = product.product_id;
+			let problem = {
+				deviation: deviation,
+				num_workers: num_workers
+			};
+			let req = {
+				product: product,
+				problem: problem
+			};
+			sessionStorage.setItem("problem_2", problem);
+
+			$.ajax({
+				url: "/api-problem_2",
+				contentType: "application/json",
+				method: "POST",
+				data: JSON.stringify(req),
+				dataType: "json",
+				success: function(data) {
+					alert(JSON.stringify(data))
+					toastr.success("Tối ưu thành công", "Success!");
+					display_result(data);
+				}
+			});
+		}
 	});
 });
 
@@ -159,7 +190,6 @@ function display_result(data) {
 	//     //     }
 	//     // });
 	// });
-	
 }
 
 function display_table(groups, num_groups, list_NCCN) {}
@@ -317,7 +347,6 @@ function display_graph(group_data) {
 }
 
 function display_chart(data_points, data_points_rmax, data_points_rmin) {
-	
 	var label = [];
 	var rmin = [];
 	var rmax = [];

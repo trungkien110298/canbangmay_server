@@ -162,6 +162,7 @@ function add_task_row() {
 					.attr("task_id")
 			);
 			update_local_product();
+			display_graph();
 		});
 	$(tr)
 		.find("select")
@@ -173,10 +174,13 @@ function add_task_row() {
 	// Update local product when a task change
 	$(tr).change(function() {
 		update_local_product();
+		display_graph();
 	});
 
 	$(".task_name", tr).change(function() {
 		update_precedence_relations_option($(tr).attr("task_id"), $(this).val());
+		update_local_product();
+		//display_graph();
 	});
 
 	// Add id_order and option
@@ -216,9 +220,11 @@ function add_relation_row() {
 				.remove();
 
 			update_local_product();
+			display_graph();
 		});
 	$(tr).change(function() {
 		update_local_product();
+		display_graph();
 	});
 
 	let insertPost = "#precedence_relations tbody tr:nth(" + num_relations + ")";
@@ -276,7 +282,7 @@ function display_data(product) {
 	if (product.precedence_relations && product.tasks) {
 		let tasks = product.tasks;
 		let precedence_relations = product.precedence_relations;
-		display_graph(tasks, precedence_relations);
+		display_graph();
 		set_precedence_relations_option(product);
 		for (let i in precedence_relations) {
 			add_relation_row();
@@ -423,7 +429,11 @@ function update_precedence_relations_option(task_id, task_name) {
 	});
 }
 
-function display_graph(tasks, precedence_relations) {
+function display_graph() {
+	let product = JSON.parse(sessionStorage.getItem("product"));
+	let tasks = product.tasks;
+	let precedence_relations = product.precedence_relations;
+	$("#graph").html(" ");
 	let data = { nodes: [], edges: [] };
 	for (let t in tasks) {
 		let task = tasks[t];
@@ -440,18 +450,20 @@ function display_graph(tasks, precedence_relations) {
 
 	//const width = document.getElementById("graph").scrollWidth;
 	//const height = document.getElementById("graph").scrollHeight || 500;
-	let width = document.getElementById("graph_rl").scrollWidth;
+	let width = document.getElementById("graph_rl").scrollWidth - 50;
 	let height = 500;
 	const graph = new G6.Graph({
 		container: "graph",
-		width,
-		height,
+		width: width,
+		height: height,
+		
 		fitView: false,
 		modes: {
 			default: ["drag-canvas",  "zoom-canvas", "click-select"]
 		},
 		layout: {
 			type: "dagre",
+			center: [500, 500],
 			rankdir: "LR",
 			align: "DL",
 			nodesepFunc: () => 1,
