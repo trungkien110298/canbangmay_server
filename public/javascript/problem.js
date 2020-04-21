@@ -17,8 +17,8 @@ $(document).ready(function() {
 		hideMethod: "fadeOut"
 	};
 	$("#optimize").click(function() {
-		var tab_id = $("#problem_tab li.active").attr("id");
-		if (tab_id == "tab-0") {
+		var tab = $("#problem_tab li a.active").attr("href");
+		if (tab == "#tab-0") {
 			let time = parseInt($("#p1_time").val()) * 3600;
 			let deviation = $("#p1_deviation").val();
 			let wattage = $("#p1_wattage").val();
@@ -49,7 +49,6 @@ $(document).ready(function() {
 				}
 			});
 		} else {
-			let time = parseInt($("#p2_time").val()) * 3600;
 			let deviation = $("#p2_deviation").val();
 			let num_workers = $("#p2_num_workers").val();
 			let product = JSON.parse(sessionStorage.getItem("product"));

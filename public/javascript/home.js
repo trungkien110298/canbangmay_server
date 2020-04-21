@@ -68,7 +68,7 @@ $(document).ready(function() {
 				}).html("Xóa");
 				$(del_button).on("click", function() {
 					bootbox.confirm({
-						message: "Bạn có muốn xóa sản phẩm này?",
+						message: "Bạn có muốn xóa mã hàng này?",
 						size: "small",
 						callback: function(result) {
 							if (result) {
@@ -80,7 +80,7 @@ $(document).ready(function() {
 									dataType: "json",
 									success: function(data) {
 										if (parseInt(data.code) == 200) {
-											toastr.success("Xóa sản phẩm thành công", "Success!");
+											toastr.success("Xóa mã hàng thành công", "Success!");
 											let del_tr = document.getElementById("tr" + product._id);
 											del_tr.remove();
 											renumber();
@@ -102,7 +102,7 @@ $(document).ready(function() {
 	$("#new_product").click(function() {
 		bootbox.prompt({
 			size: "small",
-			title: "Nhập mã sản phẩm",
+			title: "Nhập mã hàng",
 			required: true,
 			callback: function(result) {
 				if (result != null) {
@@ -115,12 +115,12 @@ $(document).ready(function() {
 						success: function(data) {
 							//bootbox.alert(data)
 							if (data.code == "2") {
-								toastr.error("Mã sản phẩm đã tồn tại", "Error!");
+								toastr.error("Mã hàng đã tồn tại", "Error!");
 								$("#new_product").trigger("click");
 							} else {
 								let product = { product_id: result };
 								sessionStorage.setItem("product", JSON.stringify(product));
-								toastr.success("Tạo sản phẩm mới thành công", "Success!");
+								toastr.success("Tạo mã hàng mới thành công", "Success!");
 								window.location.href = "/api-get_product";
 								// bootbox.alert("Lưu thành công");
 							}
