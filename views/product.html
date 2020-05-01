@@ -181,7 +181,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr  task_id="0" order="0" class="hidden">
+                      <tr task_id="0" order="0" class="hidden">
                         <td data-name="task_order">
                           <h6 class="text-center">0</h6>
                         </td>
@@ -230,9 +230,19 @@
                       </tr>
                     </tbody>
                   </table>
+
+                  <form class="form-inline mt-3">
+                    <div class="form-group">
+                      <label for="files" class="mr-2">Nhập vào bằng file CSV</label>
+                      <input type="file" id="files" class="form-control form-control-sm mr-2" accept=".csv" />
+                    </div>
+                    <div class="form-group">
+                      <button type="button" id="submit-file" class="btn btn-primary btn-sm">Tải lên</button>
+                    </div>
+                  </form>
                 </div>
 
-                
+
                 <div class="tab-pane" id="tab-2" role="tabpanel">
                   <table class="mb-0 table table-striped table-bordered" id="precedence_relations">
                     <thead class="thead-light">
@@ -285,15 +295,15 @@
           <div class="main-card mb-3 card" id="graph_rl">
             <div class="card-header">
               <div class="card-header-title">
-								<i class="header-icon lnr-apartment icon-gradient bg-love-kiss"> </i>
-								Đồ thị ràng buộc trình tự
-							</div>
+                <i class="header-icon lnr-apartment icon-gradient bg-love-kiss"> </i>
+                Đồ thị ràng buộc trình tự
+              </div>
             </div>
 
 
             <div class="card-body">
               <div id="graph">
-							</div>
+              </div>
             </div>
             <div class="d-block text-right card-footer">
             </div>
@@ -322,6 +332,8 @@
   <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="bower_components/toastr/toastr.min.js"></script>
   <script src="bower_components/g6/dist/g6.min.js"></script>
+  <script src="bower_components/jquery-csv/src/jquery.csv.min.js"></script>
+  <script src="bower_components/papaparse/papaparse.min.js"></script>
 </body>
 
 </html>

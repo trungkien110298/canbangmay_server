@@ -45,7 +45,7 @@ $(document).ready(function() {
 				dataType: "json",
 				success: function(data) {
 					toastr.success("Tối ưu thành công", "Success!");
-					display_result(data);
+					display_result(data, 1);
 				}
 			});
 		} else {
@@ -70,23 +70,26 @@ $(document).ready(function() {
 				data: JSON.stringify(req),
 				dataType: "json",
 				success: function(data) {
-					alert(JSON.stringify(data))
 					toastr.success("Tối ưu thành công", "Success!");
-					display_result(data);
+					display_result(data, 2);
 				}
 			});
 		}
 	});
 });
 
-function display_result(data) {
+function display_result(data, problem) {
 	// Reset display
 	$("#workstations-table tbody").html(" ");
-	$("#cycle_time-chart").html(" ");
+	$("#information-table tbody").html(" ")
+	$("#information-table thead tr").html(" ")
+	$("#chart").html(" ");
+	$("#chart").append($('<div></div>', { id: "cycle_time-chart", style: "height:600px;" }));
 	$("#assembly_line-graph").html(" ");
 	$("#workstations").css("display", "");
 	$("#cycle_time").css("display", "");
 	$("#assembly_line").css("display", "");
+
 
 	//Get data output
 	let num_groups = data.Numgroups;
@@ -95,6 +98,35 @@ function display_result(data) {
 	var dataPoints_rmax = data.rmax;
 	var dataPoints_rmin = data.rmin;
 	var list_NCCN = data.tasks;
+
+	
+	
+
+	
+
+	if (problem == 1){
+		let H = data.H;
+		let num_workers = data.total_worker;
+		let tr = $('<tr></tr>');
+		tr.append($('<td></td>', { class: "text-center" }).html(H));
+		tr.append($('<td></td>', { class: "text-center" }).html(num_workers));
+		$("#information-table tbody").append(tr);
+		$("#information-table thead tr").append($('<th></th>', { class: "text-center" }).html("Hiệu quả cân bằng H"));
+		$("#information-table thead tr").append($('<th></th>', { class: "text-center" }).html("Tổng số công nhân"));
+	}
+	else {
+		let H = data.H;
+		let r = data.R;
+		let tr = $('<tr></tr>');
+		tr.append($('<td></td>', { class: "text-center" }).html(H));
+		tr.append($('<td></td>', { class: "text-center" }).html(r));
+		$("#information-table tbody").append(tr);
+		$("#information-table thead tr").append($('<th></th>', { class: "text-center" }).html("Hiệu quả cân bằng H"));
+		$("#information-table thead tr").append($('<th></th>', { class: "text-center" }).html("Nhịp dây chuyền"));
+	}
+	
+	
+	
 
 	for (let i in groups) {
 		let group = groups[i];
@@ -173,22 +205,22 @@ function display_result(data) {
 	display_chart(dataPoints, dataPoints_rmax, dataPoints_rmin);
 	display_graph(data);
 
-	// var wb = XLSX.utils.table_to_book(document.getElementById('table-result'), { sheet: "Sheet JS" });
-	// var wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'binary' });
-	// function s2ab(s) {
-	//     var buf = new ArrayBuffer(s.length);
-	//     var view = new Uint8Array(buf);
-	//     for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
-	//     return buf;
-	// }
-	// $("#download").click(function () {
-	//     saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'ALBS.xlsx');
-	//     // html2canvas($("#echarts"), {
-	//     //     onrendered: function(canvas) {
-	//     //       Canvas2Image.saveAsPNG(canvas);
-	//     //     }
-	//     // });
-	// });
+	var wb = XLSX.utils.table_to_book(document.getElementById('workstations-table'), { sheet: "Sheet JS" });
+	var wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'binary' });
+	function s2ab(s) {
+	    var buf = new ArrayBuffer(s.length);
+	    var view = new Uint8Array(buf);
+	    for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+	    return buf;
+	}
+	$("#download").click(function () {
+	    saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'ALBS.xlsx');
+	    // html2canvas($("#echarts"), {
+	    //     onrendered: function(canvas) {
+	    //       Canvas2Image.saveAsPNG(canvas);
+	    //     }
+	    // });
+	});
 }
 
 function display_table(groups, num_groups, list_NCCN) {}

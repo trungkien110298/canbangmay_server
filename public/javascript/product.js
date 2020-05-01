@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
 	toastr.options = {
 		closeButton: false,
 		debug: false,
@@ -14,7 +14,7 @@ $(document).ready(function() {
 		showEasing: "swing",
 		hideEasing: "linear",
 		showMethod: "fadeIn",
-		hideMethod: "fadeOut"
+		hideMethod: "fadeOut",
 	};
 
 	var product = JSON.parse(sessionStorage.getItem("product"));
@@ -24,7 +24,7 @@ $(document).ready(function() {
 			size: "small",
 			title: "Nhập mã sản phẩm",
 			required: true,
-			callback: function(result) {
+			callback: function (result) {
 				if (result != null) {
 					$.ajax({
 						url: "/api-check_product_id",
@@ -32,7 +32,7 @@ $(document).ready(function() {
 						method: "POST",
 						data: JSON.stringify({ product_id: result }),
 						dataType: "json",
-						success: function(data) {
+						success: function (data) {
 							if (data.code == "2") {
 								toastr.error("Mã sản phẩm đã tồn tại", "Error!");
 								$("#new_product").trigger("click");
@@ -41,10 +41,10 @@ $(document).ready(function() {
 								sessionStorage.setItem("product", product);
 								toastr.success("Tạo sản phẩm mới thành công", "Success!");
 							}
-						}
+						},
 					});
 				}
-			}
+			},
 		});
 
 		//Display data
@@ -55,15 +55,15 @@ $(document).ready(function() {
 		display_data(product);
 	}
 
-	$("#add_task").on("click", function() {
+	$("#add_task").on("click", function () {
 		add_task_row();
 	});
 
-	$("#add_relation").on("click", function() {
+	$("#add_relation").on("click", function () {
 		add_relation_row();
 	});
 
-	$("#save").click(function() {
+	$("#save").click(function () {
 		let product = get_data();
 		sessionStorage.setItem("product", JSON.stringify(product));
 		let req = { product: product };
@@ -73,10 +73,71 @@ $(document).ready(function() {
 			method: "POST",
 			data: JSON.stringify(req),
 			dataType: "json",
-			success: function(data) {
+			success: function (data) {
 				toastr.success("Lưu sản phẩm thành công", "Success!");
-			}
+			},
 		});
+	});
+
+	$("#submit-file").click(function (e) {
+		e.preventDefault();
+		$("#files").parse({
+			config: {
+				delimiter: "auto",
+				complete: csv_to_html,
+			},
+			before: function (file, inputElem) {
+				console.log("Parsing file...", file);
+			},
+			error: function (err, file) {
+				console.log("ERROR:", err, file);
+			},
+			complete: function () {
+				console.log("Done with all files");
+			},
+		});
+		async function csv_to_html(result) {
+			// alert(JSON.stringify(result.data));
+			let product = {
+				product_id: $("#product_id").val(),
+				product_name: $("#product_name").val(),
+				description: $("#description").val(),
+				tasks: [],
+			};
+			for (let i in result.data) {
+				if (i == 0 || i == result.data.length - 1) continue;
+				//alert(result.data[i]);
+				let row = result.data[i];
+				let cells = row.join(",").split(",");
+				await new Promise((r) => setTimeout(r, 1)); //to get different task_id
+				product.tasks.push({
+					task_id: Date.now(),
+					task_order: i,
+					name: cells[1],
+					description: cells[2],
+					device: cells[3],
+					time: parseInt(cells[4]),
+					level: parseInt(cells[5]),
+					task_type: parseInt(cells[6]),
+				});
+			}
+			$.each($("#tasks tbody tr"), function (index) {
+				if (index != 0 && $("#tasks tbody tr").length > 2) {
+					delete_precedence_relations_option($(this).attr("task_id"));
+					$(this).remove();
+				}
+			});
+			$.each($("#precedence_relations tbody tr"), function (index) {
+				// //alert($(this).attr('order'))
+				// alert(index)
+				if (index != 0 && $("#precedence_relations tbody tr").length > 2) {
+					$(this).remove();
+				}
+			});
+			sessionStorage.setItem("product", product);
+			display_data(product);
+			display_graph();
+		}
 	});
 
 	// $("#save_as").click(function() {
@@ -113,12 +174,16 @@ $(document).ready(function() {
 // Reorder task and update id_order when a task be deleted
 function reorder_tasks() {
 	var count_task = 0;
-	$.each($("#tasks tbody tr"), function() {
+	$.each($("#tasks tbody tr"), function () {
 		let task_id = $(this).attr("task_id");
+		let task_name = $(".task_name", this).val();
 		if (task_id) {
-			$(this)
-				.find("td h6")
-				.html(count_task);
+			$(this).find("td h6").html(count_task);
+			update_precedence_relations_option(
+				task_id,
+				task_name,
+				String(count_task)
+			);
 			count_task++;
 		}
 	});
@@ -135,50 +200,42 @@ function add_task_row() {
 	let task_id = Date.now();
 	var tr = $("<tr></tr>", {
 		task_id: task_id,
-		order: new_task_order
+		order: new_task_order,
 	});
 
 	// loop through each td and create new elements with name of new_order
-	$.each($("#tasks tbody tr:nth(0) td"), function() {
+	$.each($("#tasks tbody tr:nth(0) td"), function () {
 		let cur_td = $(this);
 		// add new td and element if it has a nane
-		let td = $(cur_td)
-			.clone()
-			.val("");
+		let td = $(cur_td).clone().val("");
 		td.appendTo($(tr));
 	});
 
 	$(tr)
 		.find("td button.row-remove")
-		.on("click", function() {
-			$(this)
-				.closest("tr")
-				.remove();
+		.on("click", function () {
+			$(this).closest("tr").remove();
 			reorder_tasks();
 
-			delete_precedence_relations_option(
-				$(this)
-					.closest("tr")
-					.attr("task_id")
-			);
+			delete_precedence_relations_option($(this).closest("tr").attr("task_id"));
 			update_local_product();
 			display_graph();
 		});
-	$(tr)
-		.find("select")
-		.val("");
-	$(tr)
-		.find("td h6")
-		.html(new_task_order);
+	$(tr).find("select").val("");
+	$(tr).find("td h6").html(new_task_order);
 
 	// Update local product when a task change
-	$(tr).change(function() {
+	$(tr).change(function () {
 		update_local_product();
 		display_graph();
 	});
 
-	$(".task_name", tr).change(function() {
-		update_precedence_relations_option($(tr).attr("task_id"), $(this).val());
+	$(".task_name", tr).change(function () {
+		update_precedence_relations_option(
+			$(tr).attr("task_id"),
+			$(this).val(),
+			$(tr).attr("task_order")
+		);
 		update_local_product();
 		//display_graph();
 	});
@@ -196,33 +253,27 @@ function add_relation_row() {
 	let num_relations = $("#precedence_relations tbody tr").length - 2;
 	let new_relation_order = ++num_relations;
 	var tr = $("<tr></tr>", {
-		order: new_relation_order
+		order: new_relation_order,
 	});
 
 	// loop through each td and create new elements with name of new_order
-	$.each($("#precedence_relations tbody tr:nth(0) td"), function() {
+	$.each($("#precedence_relations tbody tr:nth(0) td"), function () {
 		let cur_td = $(this);
 		// add new td and element if it has a nane
-		let td = $(cur_td)
-			.clone()
-			.val("");
+		let td = $(cur_td).clone().val("");
 		td.appendTo($(tr));
 	});
 
-	$(tr)
-		.find("select")
-		.val("");
+	$(tr).find("select").val("");
 	$(tr)
 		.find("td button.row-remove")
-		.on("click", function() {
-			$(this)
-				.closest("tr")
-				.remove();
+		.on("click", function () {
+			$(this).closest("tr").remove();
 
 			update_local_product();
 			display_graph();
 		});
-	$(tr).change(function() {
+	$(tr).change(function () {
 		update_local_product();
 		display_graph();
 	});
@@ -248,33 +299,20 @@ function display_data(product) {
 			add_task_row();
 		}
 
-		$("#tasks tbody tr").each(function() {
+		$("#tasks tbody tr").each(function () {
 			if (parseInt($(this).attr("order")) > 0) {
 				let i = parseInt($(this).attr("order")) - 1;
 
 				$(this).attr("task_id", tasks[i].task_id);
-				$(this)
-					.find(':input[name = "name"]')
-					.val(tasks[i].name);
-				$(this)
-					.find(':input[name = "description"]')
-					.val(tasks[i].description);
-				$(this)
-					.find(':input[name = "time"]')
-					.val(tasks[i].time);
-				$(this)
-					.find(':input[name = "device"]')
-					.val(tasks[i].device);
-				$(this)
-					.find(':input[name = "task_type"]')
-					.val(tasks[i].task_type);
-				$(this)
-					.find(':input[name = "level"]')
-					.val(tasks[i].level);
+				$(this).find(':input[name = "name"]').val(tasks[i].name);
+				$(this).find(':input[name = "description"]').val(tasks[i].description);
+				$(this).find(':input[name = "time"]').val(tasks[i].time);
+				$(this).find(':input[name = "device"]').val(tasks[i].device);
+				$(this).find(':input[name = "task_type"]').val(tasks[i].task_type);
+				$(this).find(':input[name = "level"]').val(tasks[i].level);
 			}
 		});
-		//reorder_tasks();
-		// update_precedence_relations_option();
+		set_precedence_relations_option(product);
 	} else {
 		add_task_row();
 	}
@@ -283,11 +321,10 @@ function display_data(product) {
 		let tasks = product.tasks;
 		let precedence_relations = product.precedence_relations;
 		display_graph();
-		set_precedence_relations_option(product);
 		for (let i in precedence_relations) {
 			add_relation_row();
 		}
-		$("#precedence_relations tbody tr").each(function() {
+		$("#precedence_relations tbody tr").each(function () {
 			if (parseInt($(this).attr("order")) > 0) {
 				let i = parseInt($(this).attr("order")) - 1;
 				$(this)
@@ -306,36 +343,18 @@ function display_data(product) {
 function get_data() {
 	let product = { tasks: [], precedence_relations: [] };
 
-	$("#tasks tbody tr").each(function() {
+	$("#tasks tbody tr").each(function () {
 		if (parseInt($(this).attr("order")) > 0) {
 			let task_id = $(this).attr("task_id");
-			let task_order = $(this)
-				.find("h6")
-				.html();
-			let name = $(this)
-				.find(':input[name = "name"]')
-				.val();
-			let description = $(this)
-				.find(':input[name = "description"]')
-				.val();
-			let device = $(this)
-				.find(':input[name = "device"]')
-				.val();
-			let time = parseInt(
-				$(this)
-					.find(':input[name = "time"]')
-					.val()
-			);
+			let task_order = $(this).find("h6").html();
+			let name = $(this).find(':input[name = "name"]').val();
+			let description = $(this).find(':input[name = "description"]').val();
+			let device = $(this).find(':input[name = "device"]').val();
+			let time = parseInt($(this).find(':input[name = "time"]').val());
 			let task_type = parseInt(
-				$(this)
-					.find(':input[name = "task_type"]')
-					.val()
+				$(this).find(':input[name = "task_type"]').val()
 			);
-			let level = parseInt(
-				$(this)
-					.find(':input[name = "level"]')
-					.val()
-			);
+			let level = parseInt($(this).find(':input[name = "level"]').val());
 			let row = {
 				task_id: task_id,
 				task_order: task_order,
@@ -344,13 +363,13 @@ function get_data() {
 				device: device,
 				time: time,
 				level: level,
-				task_type: task_type
+				task_type: task_type,
 			};
 
 			product["tasks"].push(row);
 		}
 	});
-	$("#precedence_relations tbody tr").each(function() {
+	$("#precedence_relations tbody tr").each(function () {
 		if (parseInt($(this).attr("order")) > 0) {
 			let previous_task_id = $(this)
 				.find(':input[name = "previous_task"]')
@@ -360,7 +379,7 @@ function get_data() {
 				.val();
 			let row = {
 				previous_task_id: previous_task_id,
-				posterior_task_id: posterior_task_id
+				posterior_task_id: posterior_task_id,
 			};
 			product["precedence_relations"].push(row);
 		}
@@ -375,15 +394,15 @@ function get_data() {
 
 function set_precedence_relations_option(product) {
 	let tasks = product.tasks;
-	$("#pr0 td select").each(function() {
+	$("#pr0 td select").each(function () {
 		$(this).html(" ");
 		for (let t in tasks) {
 			let task = tasks[t];
 
 			let option = $("<option></option>", {
-				value: task.task_id
+				value: task.task_id,
 			});
-			option.html(task.name);
+			option.html(task.task_order + " - " + task.name);
 			$(this).append(option);
 		}
 		$(this).val("");
@@ -391,16 +410,16 @@ function set_precedence_relations_option(product) {
 }
 
 function add_precedence_relations_option(task_id) {
-	$("#precedence_relations select").each(function() {
+	$("#precedence_relations select").each(function () {
 		let option = $("<option></option>", {
-			value: task_id
+			value: task_id,
 		});
 		$(this).append(option);
 	});
 }
 
 function delete_precedence_relations_option(task_id) {
-	$("#precedence_relations tbody tr").each(function() {
+	$("#precedence_relations tbody tr").each(function (index) {
 		if ($(this).attr("order")) {
 			let previous_task_id = $(this)
 				.find(':input[name = "previous_task"]')
@@ -408,11 +427,14 @@ function delete_precedence_relations_option(task_id) {
 			let posterior_task_id = $(this)
 				.find(':input[name = "posterior_task"]')
 				.val();
-			if (posterior_task_id == task_id || previous_task_id == task_id) {
+			if (
+				(posterior_task_id == task_id || previous_task_id == task_id) &&
+				index != 0
+			) {
 				// Delete relations have task just be deleted
 				$(this).remove();
 			}
-			$("option", this).each(function() {
+			$("option", this).each(function () {
 				if ($(this).val() == task_id) {
 					$(this).remove();
 				}
@@ -421,10 +443,10 @@ function delete_precedence_relations_option(task_id) {
 	});
 }
 
-function update_precedence_relations_option(task_id, task_name) {
-	$("#precedence_relations option").each(function() {
+function update_precedence_relations_option(task_id, task_name, task_order) {
+	$("#precedence_relations option").each(function () {
 		if ($(this).val() == task_id) {
-			$(this).html(task_name);
+			$(this).html(task_order + " - " + task_name);
 		}
 	});
 }
@@ -444,39 +466,32 @@ function display_graph() {
 		let rela = precedence_relations[pr];
 		data.edges.push({
 			source: rela.previous_task_id,
-			target: rela.posterior_task_id
+			target: rela.posterior_task_id,
 		});
 	}
 
 	//const width = document.getElementById("graph").scrollWidth;
 	//const height = document.getElementById("graph").scrollHeight || 500;
 	let width = document.getElementById("graph_rl").scrollWidth - 50;
-	let height = 500;
+	let height = 300;
 	const graph = new G6.Graph({
 		container: "graph",
 		width: width,
 		height: height,
-		
-		fitView: false,
+
+		fitView: true,
 		modes: {
-			default: ["drag-canvas",  "zoom-canvas", "click-select"]
+			default: ["drag-canvas", "zoom-canvas", "click-select"],
 		},
 		layout: {
 			type: "dagre",
-			center: [500, 500],
 			rankdir: "LR",
 			align: "DL",
 			nodesepFunc: () => 1,
-			ranksepFunc: () => 1
+			ranksepFunc: () => 1,
 		},
 		defaultNode: {
-			size: [30, 20],
-			type: "rect",
-			style: {
-				lineWidth: 2,
-				stroke: "#5B8FF9",
-				fill: "#C6E5FF"
-			}
+			type: "sql",
 		},
 		defaultEdge: {
 			size: 1,
@@ -484,10 +499,10 @@ function display_graph() {
 			style: {
 				endArrow: {
 					path: "M 0,0 L 8,4 L 8,-4 Z",
-					fill: "#e2e2e2"
-				}
-			}
-		}
+					fill: "#e2e2e2",
+				},
+			},
+		},
 	});
 	graph.data(data);
 	graph.render();
