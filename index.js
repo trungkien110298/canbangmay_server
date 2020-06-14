@@ -63,6 +63,9 @@ app.use(api_problem_1);
 var api_problem_2 = require('./routes/api-problem_2');
 app.use(api_problem_2);
 
+var api_problem_3 = require('./routes/api-problem_3');
+app.use(api_problem_3);
+
 var api_get_list_product = require('./routes/api-get_list_product');
 app.use(api_get_list_product);
 

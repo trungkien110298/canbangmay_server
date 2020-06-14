@@ -4,16 +4,13 @@ var cmd = require("node-cmd");
 var os = require("os");
 var Product = require("../models/product");
 
-var api_problem_1 = express.Router();
+var api_problem_3 = express.Router();
 
-api_problem_1.post("/api-problem_1", (req, res) => {
-	console.log("/api-problem_1");
+api_problem_3.post("/api-problem_3", (req, res) => {
+	console.log("/api-problem_3");
 	let product = req.body.product;
 	let problem = req.body.problem;
-
-	let time = problem.time;
 	let deviation = problem.deviation;
-	let wattage = problem.wattage;
 
 	let tasks = product.tasks;
 	let id_order = {}
@@ -24,15 +21,10 @@ api_problem_1.post("/api-problem_1", (req, res) => {
 	let num_tasks = tasks.length;
 	let num_precedence_relations = precedence_relations.length;
 
-	//Calculate R
-	if (problem.cycle_time != NaN) {
-		cycle_time = problem.cycle_time;
-	} else {
-		cycle_time = parseFloat(time) * parseFloat(wattage);
-	}
+
 
 	//Create input for C++ program
-	str = num_tasks.toString() + "\n" + cycle_time + "\n" + deviation + "\n";
+	str = num_tasks.toString() + "\n" + deviation + "\n";
 
 	for (i in tasks) {
 		task = tasks[i];
@@ -56,7 +48,7 @@ api_problem_1.post("/api-problem_1", (req, res) => {
 		str += id_order[pr.previous_task_id] + " " + id_order[pr.posterior_task_id] + "\n";
 	}
 
-	fs.writeFileSync("./temp/input_p1.txt", str);
+	fs.writeFileSync("./temp/input_p3.txt", str);
 	date = new Date();
 	console.log(
 		date.toLocaleString("vi-GB", { timeZone: "Asia/Ho_Chi_Minh" }) +
@@ -64,8 +56,8 @@ api_problem_1.post("/api-problem_1", (req, res) => {
 	);
 
 	//Run C++ program
-	if (os.platform() == "win32") command = "cd controller && start ALBP1-SA_greedy.exe";
-	else command = "cd controller &&  ./ALBP1-SA_greedy";
+	if (os.platform() == "win32") command = "cd controller && start ALBPE-SA.exe";
+	else command = "cd controller &&  ./ALBPE-SA";
 	cmd.get(
 		command,
 		//Send output
@@ -74,12 +66,12 @@ api_problem_1.post("/api-problem_1", (req, res) => {
 				console.log(err);
 			}
 
-			var text = fs.readFileSync("./temp/output_p1.json");
-
+			var text = fs.readFileSync("./temp/output_p3.json");
 			output_data = JSON.parse(text);
 			output_data.tasks = tasks;
-			output_data.rmin = parseFloat(cycle_time) - (parseFloat(cycle_time) * deviation) / 100;
-			output_data.rmax = parseFloat(cycle_time) + (parseFloat(cycle_time) * deviation) / 100;
+			let R = output_data.R;
+			output_data.rmin = parseFloat(R) - (parseFloat(R) * deviation) / 100;
+			output_data.rmax = parseFloat(R) + (parseFloat(R) * deviation) / 100;
 			text = JSON.stringify(output_data);
 			res.send(output_data);
 			console.log(
@@ -92,4 +84,4 @@ api_problem_1.post("/api-problem_1", (req, res) => {
 	);
 });
 
-module.exports = api_problem_1;
+module.exports = api_problem_3;

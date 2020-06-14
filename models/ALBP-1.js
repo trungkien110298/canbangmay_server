@@ -8,7 +8,7 @@ var ALBPOneSchema = new Schema({
         required: true
     },
     input: {
-        cycle_time:{
+        cycle_time: {
             type: Number,
             required: true
         },
@@ -16,7 +16,7 @@ var ALBPOneSchema = new Schema({
             type: Number,
             required: true
         },
-        deviation:{
+        deviation: {
             type: Number,
             required: true
         },
@@ -31,12 +31,12 @@ var ALBPOneSchema = new Schema({
         },
         workstations: [
             {
-                workstations_id: {
-                    type:  String,
+                workstation_id: {
+                    type: String,
                     require: true
                 },
                 tasks: [{
-                    tasks_id: {
+                    task_id: {
                         type: String,
                         require: true
                     },
@@ -98,12 +98,12 @@ var ALBPOneSchema = new Schema({
             }
         ]
     }
-    
+
 });
 
 ALBPOneSchema.pre('save', function (next) {
     var ALBPOne = this;
-    
+
     next();
 });
 

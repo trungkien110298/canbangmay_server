@@ -1,20 +1,19 @@
 #include <bits/stdc++.h>
-#include <io.h>
-#include <fcntl.h>
 
 using namespace std;
 
 const double eps = 1e-9;
+const int INF = 1e9;
 
 const int MAXN = 100; // Maximum number of tasks
 const int MAXGROUPSIZE = 3;
-const double BALANCETHRESH = 0.7;
-const int HMAX = 101;
-const int NMAX = 1000;
 
 const int STARTTEMP = 100;
 const int DECTEMP = 5;
+const double COOLRATE = 1.0 / 1.027;
 const int LOOPTIME = 20;
+
+const int SA_REPEAT = 1; // Ideally SA_REPEAT = 1
 
 ///* Read input
 
@@ -30,6 +29,13 @@ struct task
     vector<int> revEdge;
 };
 
+struct edge_du_phong
+{
+    vector<int> edge, originEdge;
+    vector<int> revEdge;
+    int status;
+};
+
 struct group
 {
     int worker;
@@ -39,24 +45,34 @@ struct group
     vector<int> edge;
 };
 
-int N;
-double R, Rmax, Rmin, sailech;
+int N, NConst, DeltaPercent;
+double Delta, R, Rmax, Rmin, RminNP, totalTimeW = 0, RmaxNP = 0, lowerBound;
 task taskList[MAXN + 5];
+/// Biến edge_dp dùng để lưu lại các cạnh để gán lại, bởi vì các cạnh bị xóa sau mỗi lần tìm initialSolution.
+edge_du_phong edge_dp[MAXN + 5];
+vector<double> list_R;
 group groupList[3 * MAXN + 5];
+vector<vector<int>> list_group;
 
 void readInput()
 {
-    freopen("../temp/input_p1.txt", "r", stdin);
-    freopen("../temp/output_p1.json", "w", stdout);
+    freopen("../temp/input_p3.txt", "r", stdin);
+    freopen("../temp/output_p3.json", "w", stdout);
 
-    cin >> N >> R >> sailech;
-
+    int DeltaPercent;
+    cin >> N >> DeltaPercent;
+    Delta = (double)DeltaPercent / 100.0;
     for (int i = 1; i <= N; i++)
     {
         int ign;
         cin >> ign >> taskList[i].machine >> taskList[i].type >> taskList[i].worktime >> taskList[i].level;
         taskList[i].status = 1;
+        edge_dp[i].status = 1;
+        if (taskList[i].worktime > lowerBound)
+            lowerBound = taskList[i].worktime;
     }
+
+    lowerBound = lowerBound / (3 * (1 + Delta)) + 0.01;
 
     int M;
     cin >> M;
@@ -67,44 +83,9 @@ void readInput()
         taskList[u].edge.push_back(v);
         taskList[u].originEdge.push_back(v);
         taskList[v].revEdge.push_back(u);
-    }
-
-    /*
-    for(int type = 1; type <= 3; type++){
-        cin >> M;
-        while(M--){
-            string machine; cin >> machine;
-            for(int i = 1; i <= N; i++){
-                if(taskList[i].machine == machine) taskList[i].type = type;
-            }
-        }
-    }*/
-
-    /*
-    for(int i = 1; i <= N; i++){
-        cin.ignore();
-        string a;
-        getline(std::cin, a);
-        //int temp;
-        //cin >> temp;
-        taskList[i].machine_name = a;
-        //taskList[i].status = 1;
-    }*/
-
-    if (sailech == 10)
-    {
-        Rmin = R * 0.9;
-        Rmax = R * 1.1;
-    }
-    else if (sailech == 15)
-    {
-        Rmin = R * 0.85;
-        Rmax = R * 1.15;
-    }
-    else
-    {
-        Rmin = R * 0.95;
-        Rmax = R * 1.05;
+        edge_dp[u].edge.push_back(v);
+        edge_dp[u].originEdge.push_back(v);
+        edge_dp[v].revEdge.push_back(u);
     }
 }
 
@@ -115,20 +96,20 @@ struct solution
     int workers;
     int balancedGroup;
     double balance;
-    vector< vector<int> > groups;
+    vector<vector<int>> groups;
 };
 
 solution curRes, finalRes;
 
-set<int> reachableTasks;
+set<int> reachableTask;
 set<int> groupElements;
 
 bool dfs1(int u, int rev)
 {
-    if (rev == -1 && groupElements.find(u) == groupElements.end() && reachableTasks.find(u) != reachableTasks.end())
+    if (rev == -1 && groupElements.find(u) == groupElements.end() && reachableTask.find(u) != reachableTask.end())
         return true;
 
-    reachableTasks.insert(u * rev);
+    reachableTask.insert(u * rev);
 
     if (rev == 1)
     {
@@ -137,7 +118,7 @@ bool dfs1(int u, int rev)
             int v = taskList[u].edge[i];
             if (taskList[v].status < 0)
                 v = -taskList[v].status;
-            if (reachableTasks.find(v * rev) == reachableTasks.end())
+            if (reachableTask.find(v * rev) == reachableTask.end())
                 dfs1(v, rev);
         }
     }
@@ -148,7 +129,7 @@ bool dfs1(int u, int rev)
             int v = taskList[u].revEdge[i];
             if (taskList[v].status < 0)
                 v = -taskList[v].status;
-            if (reachableTasks.find(v * rev) == reachableTasks.end() && dfs1(v, rev))
+            if (reachableTask.find(v * rev) == reachableTask.end() && dfs1(v, rev))
                 return true;
         }
     }
@@ -156,42 +137,18 @@ bool dfs1(int u, int rev)
     return false;
 }
 
-int checkSize(vector<int> group)
-{
-    for (int i = 0; i < (int)group.size(); i++)
-    {
-        if (taskList[group[i]].worktime >= Rmin && taskList[group[i]].worktime <= Rmax)
-            return 1;
-        if (taskList[group[i]].worktime >= 2 * Rmin && taskList[group[i]].worktime <= 2 * Rmax)
-            return 2;
-    }
-    return false;
-}
-
 bool tooLargeOrBadPair(vector<int> group)
 {
-    // not more than MAXGROUPSIZE jobs
+    // not more than MAXGROUPSIZE tasks
     if ((int)group.size() > MAXGROUPSIZE)
         return true;
 
-    // totalTime <= 3.3R
+    // totalTime <= 3(R + Delta*R)
     double totalTime = 0;
     for (int i = 0; i < (int)group.size(); i++)
         totalTime += taskList[group[i]].worktime;
-
-    if (totalTime > 3 * Rmax)
+    if ((double)totalTime > 3.0 * (R + Delta * R))
         return true;
-    /*
-    int checkSizeGroup = checkSize(group);
-    if (checkSizeGroup == 1){
-        if((double)totalTime > Rmax) return true;
-    }
-    else if(checkSizeGroup == 2){
-        if((double)totalTime >= 2 * Rmax) return true;
-    }
-    else{
-        if((double)totalTime >= 3 * Rmax) return true;
-    }*/
 
     // not more than 2 machine
     set<string> machine;
@@ -222,7 +179,7 @@ bool validGroup(vector<int> group)
         return false;
 
     // no cycle between 2 groups
-    reachableTasks.clear();
+    reachableTask.clear();
     groupElements.clear();
     for (int i = 0; i < (int)group.size(); i++)
     {
@@ -263,27 +220,22 @@ groupStat calGroupStat(vector<int> group)
             baseWorkers += 3;
     }
 
-    double actualWorkers = totalTime / (double)R;
-    stat.TimeWork = totalTime;
-    //stat.Rj = actualWorkers;
     if (totalTime <= Rmax)
     {
         stat.workers = 1;
         stat.workerSaved = baseWorkers - 1;
-        //stat.balanced = (actualWorkers >= 0.85) ? 1 : 0;
     }
     else if (totalTime <= 2 * Rmax)
     {
         stat.workers = 2;
         stat.workerSaved = baseWorkers - 2;
-        //stat.balanced = (actualWorkers >= 1.75) ? 1 : 0;
     }
     else
     {
         stat.workers = 3;
         stat.workerSaved = baseWorkers - 3;
-        //stat.balanced = (actualWorkers >= 2.65) ? 1 : 0;
     }
+    stat.TimeWork = totalTime;
     stat.Rj = totalTime / stat.workers;
     stat.balanced = (stat.Rj >= Rmin && stat.Rj <= Rmax) ? 1 : 0;
     stat.tasks = (int)group.size();
@@ -306,13 +258,12 @@ void cmpGroup(vector<int> group)
             return;
         else if (curGroupStat.balanced > curBestGroupStat.balanced)
             curBestGroup = group;
-        ///* Optional: choose smaller group if all available groups are unbalanced
-        else
-        {
-            if (curGroupStat.balanced == 1)
-                return;
-            else if (curGroupStat.tasks < curBestGroupStat.tasks)
-                curBestGroup = group;
+        else if (rand() % 100 >= 50)
+            curBestGroup = group;
+        /* Optional: choose smaller group if all available groups are unbalanced
+        else{
+            if(curGroupStat.balanced == 1) return;
+            else if(curGroupStat.tasks < curBestGroupStat.tasks) curBestGroup = group;
         }
         //*/
     }
@@ -363,8 +314,43 @@ void calSolutionStat(solution *sol)
     (*sol).balance = (double)(*sol).balancedGroup / (double)(*sol).groups.size();
 }
 
+void resetAllVariable()
+{
+    finalRes.balance = 0;
+    finalRes.balancedGroup = 0;
+    finalRes.groups.clear();
+    finalRes.workers = 0;
+
+    curRes.balance = 0;
+    curRes.balancedGroup = 0;
+    curRes.groups.clear();
+    curRes.workers = 0;
+
+    for (int i = 1; i <= N; i++)
+    {
+        taskList[i].status = 1;
+        taskList[i].edge.clear();
+        taskList[i].originEdge.clear();
+        taskList[i].revEdge.clear();
+        for (int a1 = 0; a1 < edge_dp[i].edge.size(); a1++)
+        {
+            taskList[i].edge.push_back(edge_dp[i].edge[a1]);
+        }
+        for (int a1 = 0; a1 < edge_dp[i].originEdge.size(); a1++)
+        {
+            taskList[i].originEdge.push_back(edge_dp[i].originEdge[a1]);
+        }
+        for (int a1 = 0; a1 < edge_dp[i].revEdge.size(); a1++)
+        {
+            taskList[i].revEdge.push_back(edge_dp[i].revEdge[a1]);
+        }
+    }
+}
+
 void findSolution()
 {
+    resetAllVariable();
+
     while (true)
     {
         bool remain = false;
@@ -417,6 +403,7 @@ void findSolution()
 
     calSolutionStat(&curRes);
     finalRes = curRes;
+    //cout << "R = " << R << ", N' = " << finalRes.workers << endl;
 }
 
 ///* Tune solution
@@ -481,33 +468,18 @@ bool validSolution(solution *sol)
 // cmpSolution() returns true if X > Y, false otherwise
 bool cmpSolution(solution X, solution Y)
 {
-    if (X.balance + eps >= BALANCETHRESH && Y.balance + eps < BALANCETHRESH)
+    if (X.balance > Y.balance + eps)
         return true;
-    else if (X.balance + eps < BALANCETHRESH && Y.balance + eps >= BALANCETHRESH)
+    else if (X.balance + eps < Y.balance)
         return false;
-    else if (X.balance + eps >= BALANCETHRESH)
-    {
-        if (X.workers < Y.workers)
-            return true;
-        else if (X.workers > Y.workers)
-            return false;
-        else if (fabs(X.balance - Y.balance) < eps)
-            return false;
-        else
-            return X.balance > Y.balance;
-    }
-    else if (fabs(X.balance - Y.balance) < eps)
-        return X.workers < Y.workers;
     else
-        return X.balance > Y.balance;
+        return X.workers < Y.workers;
 }
-
-void printSolution(solution a);
-void printJSON(solution a);
 
 solution getNeighbor(int choice)
 {
     vector<solution> solList;
+    // Move one task from workstation i to workstation k
     for (int i = 0; i < (int)curRes.groups.size(); i++)
     {
         for (int j = 0; j < (int)curRes.groups[i].size(); j++)
@@ -516,6 +488,8 @@ solution getNeighbor(int choice)
             {
                 solution tempRes = curRes;
                 if (k == i)
+                    continue;
+                else if (k < i && (int)curRes.groups[i].size() == 1 && (int)curRes.groups[k].size() == 1)
                     continue;
                 else if (k < (int)curRes.groups.size())
                 {
@@ -533,20 +507,45 @@ solution getNeighbor(int choice)
                 }
                 else
                     continue;
-                //printJSON(tempRes);
+
                 // Check for better solution
                 if (!validSolution(&tempRes))
                     continue;
                 calSolutionStat(&tempRes);
-
                 if (cmpSolution(tempRes, finalRes))
-                {
-                    //cout << "\nCac phuong an trung gian: \n";
-                    //printSolution(finalRes);
-                    //printJSON(finalRes);
                     finalRes = tempRes;
-                }
                 solList.push_back(tempRes);
+            }
+        }
+    }
+    // Swap two tasks in two different workstations
+    for (int i = 0; i < (int)curRes.groups.size(); i++)
+    {
+        for (int j = 0; j < (int)curRes.groups[i].size(); j++)
+        {
+            for (int k = i + 1; k < (int)curRes.groups.size(); k++)
+            {
+                for (int t = 0; t < (int)curRes.groups[k].size(); t++)
+                {
+                    solution tempRes = curRes;
+                    if ((int)curRes.groups[i].size() == 1 && (int)curRes.groups[k].size() == 1)
+                        continue;
+                    else
+                    {
+                        tempRes.groups[i].push_back(tempRes.groups[k][t]);
+                        tempRes.groups[k].push_back(tempRes.groups[i][j]);
+                        tempRes.groups[i].erase(tempRes.groups[i].begin() + j);
+                        tempRes.groups[k].erase(tempRes.groups[k].begin() + t);
+                    }
+
+                    // Check for better solution
+                    if (!validSolution(&tempRes))
+                        continue;
+                    calSolutionStat(&tempRes);
+                    if (cmpSolution(tempRes, finalRes))
+                        finalRes = tempRes;
+                    solList.push_back(tempRes);
+                }
             }
         }
     }
@@ -563,7 +562,6 @@ solution getNeighbor(int choice)
 void tuneSolution()
 {
     ///* Simulated annealing
-    srand(time(NULL));
     int temperature = STARTTEMP;
     int choice = (STARTTEMP - 1) / DECTEMP + 1;
 
@@ -575,30 +573,214 @@ void tuneSolution()
             if (tempRes.groups == curRes.groups)
                 break;
             if (cmpSolution(tempRes, curRes))
-            {
                 curRes = tempRes;
-                //cout << "\nCac phuong an trung gian: \n";
-                //   printSolution(tempRes);
-                if (cmpSolution(curRes, finalRes))
-                {
-                    //cout << "\nCac phuong an trung gian: \n";
-                    //printSolution(finalRes);
-                    finalRes = curRes;
-                }
-            }
             else if (rand() % STARTTEMP + 1 <= temperature)
-            {
-                //cout << "\nCac phuong an trung gian: \n";
-                //    printSolution(tempRes);
                 curRes = tempRes;
-            }
         }
 
-        //printSolution(finalRes);
         temperature -= DECTEMP;
         choice--;
     }
-    //*/
+}
+
+void calculate_R(double res)
+{
+    R = res;
+    Rmin = R - Delta * R;
+    Rmax = R + Delta * R;
+}
+
+///* Print final solution
+
+void printSolution(solution sol)
+{
+
+    calSolutionStat(&sol);
+    int totalWorkers = 0;
+    int totalWorkerSaved = 0;
+    int balancedGroups = 0;
+
+    cout.precision(3);
+    cout << "Optimal R = " << fixed << R << endl;
+
+    for (int i = 0; i < (int)sol.groups.size(); i++)
+        sort(sol.groups[i].begin(), sol.groups[i].end());
+    sort(sol.groups.begin(), sol.groups.end());
+
+    cout << (int)sol.groups.size() << " groups" << endl;
+    for (int i = 0; i < (int)sol.groups.size(); i++)
+    {
+        cout << "Group " << i + 1 << ":";
+        for (int j = 0; j < (int)sol.groups[i].size(); j++)
+        {
+            cout << " " << sol.groups[i][j];
+        }
+
+        groupStat stat = calGroupStat(sol.groups[i]);
+        totalWorkers += stat.workers;
+        balancedGroups += stat.balanced;
+        totalWorkerSaved += stat.workerSaved;
+        cout << " -- W: " << stat.workers << ", S: " << stat.workerSaved << ", T: " << stat.TimeWork << ", Rj: " << stat.Rj;
+        if (stat.balanced == 1)
+            cout << " YES" << endl;
+        else
+            cout << " NO" << endl;
+    }
+
+    cout << totalWorkers << " workers, " << totalWorkerSaved << " saved, ";
+    cout << 100.0 * (double)balancedGroups / (double)sol.groups.size() << "%" << endl;
+}
+
+///* Find solution
+
+solution SAforALBP1()
+{
+    solution bestRes;
+    for (int t = 1; t <= SA_REPEAT; t++)
+    {
+        findSolution();
+        tuneSolution();
+        if (t == 1)
+            bestRes = finalRes;
+        else if (cmpSolution(finalRes, bestRes))
+            bestRes = finalRes;
+    }
+    return bestRes;
+}
+
+bool tooLargeOrBadPair_R(vector<int> group)
+{
+    // not more than MAXGROUPSIZE jobs
+    if ((int)group.size() > MAXGROUPSIZE)
+        return true;
+
+    // not more than 2 machine
+    set<string> machine;
+    for (int i = 0; i < (int)group.size(); i++)
+        machine.insert(taskList[group[i]].machine);
+    if ((int)machine.size() > 2)
+        return true;
+
+    // no 1-1 or 1-2 pair
+    set<int> type;
+    for (int i = 0; i < (int)group.size(); i++)
+        type.insert(taskList[group[i]].type);
+    if ((int)machine.size() == 2)
+    {
+        if ((int)type.size() == 1 && type.find(1) != type.end())
+            return true;
+        if (type.find(1) != type.end() && type.find(2) != type.end())
+            return true;
+    }
+
+    return false;
+}
+
+bool validGroup_R(vector<int> group)
+{
+    if (tooLargeOrBadPair_R((group)))
+        return false;
+
+    // no cycle between 2 groups
+    reachableTask.clear();
+    groupElements.clear();
+    for (int i = 0; i < (int)group.size(); i++)
+    {
+        groupElements.insert(group[i]);
+        dfs1(group[i], 1);
+    }
+    for (int i = 0; i < (int)group.size(); i++)
+        if (dfs1(group[i], -1))
+            return false;
+
+    return true;
+}
+
+void six_values(vector<int> group)
+{
+
+    double group_time = 0;
+    sort(group.begin(), group.end());
+    for (int i = 0; i < list_group.size(); i++)
+    {
+        if (group == list_group[i])
+            return;
+    }
+    list_group.push_back(group);
+    for (int i = 0; i < group.size(); i++)
+    {
+        //cout << group[i] << " ";
+        group_time += taskList[group[i]].worktime;
+    }
+    //cout << endl;
+
+    double value1, value2, value3;
+    value1 = group_time / (3 * (1 + Delta));
+    value2 = group_time / (2 * (1 + Delta));
+    value3 = group_time / (1 * (1 + Delta));
+
+    if (value1 + eps >= lowerBound)
+        list_R.push_back(value1);
+    if (value2 + eps >= lowerBound)
+        list_R.push_back(value2);
+    if (value3 + eps >= lowerBound)
+        list_R.push_back(value3);
+}
+
+void findGroup_R(int t, vector<int> group, int lastTask)
+{
+    if (lastTask != 0)
+    {
+        taskList[lastTask].status = 2;
+        group.push_back(lastTask);
+    }
+
+    if (t == MAXGROUPSIZE)
+    {
+        if (validGroup_R(group))
+        {
+            six_values(group);
+        }
+    }
+    else
+    {
+        findGroup_R(t + 1, group, 0);
+        for (int i = 1; i <= N; i++)
+        {
+            if (taskList[i].status == 1)
+            {
+                findGroup_R(t + 1, group, i);
+            }
+        }
+    }
+
+    if (lastTask != 0)
+    {
+        taskList[lastTask].status = 1;
+        group.pop_back();
+    }
+}
+
+void count_R()
+{
+
+    for (int i = 0; i < N; i++)
+    {
+        vector<int> group;
+        findGroup_R(1, group, i);
+        for (int j = 0; j < N; j++)
+            taskList[i].status = 1;
+    }
+
+    sort(list_R.begin(), list_R.end());
+    for (int i = 1; i < list_R.size(); i++)
+    {
+        if (abs(list_R[i] - list_R[i - 1]) < eps)
+        {
+            list_R.erase(list_R.begin() + i - 1);
+            i--;
+        }
+    }
 }
 
 bool checkConnect(solution finalRes, int u, int v)
@@ -821,7 +1003,7 @@ void line_arrangement(solution finalRes)
 
 ///* Print final solution
 
-void printSolution(solution finalRes)
+void printJSON(solution finalRes)
 {
     int totalWorkers = 0;
     int totalWorkerSaved = 0;
@@ -832,16 +1014,17 @@ void printSolution(solution finalRes)
     sort(finalRes.groups.begin(), finalRes.groups.end());
 
     cout << "{\"num_workstations\": " << (int)finalRes.groups.size() << ", ";
+    cout << "\"R\": " << R << ", ";
     cout << "\"workstations\":[";
     for (int i = 0; i < (int)finalRes.groups.size(); i++)
     {
         int levelmax = 0;
-        cout << "{\"workstations_id\": " << i + 1 << ", ";
+        cout << "{\"workstation_id\": " << i + 1 << ", ";
         cout << "\"tasks\":[";
         for (int j = 0; j < (int)finalRes.groups[i].size(); j++)
         {
             int idtask = finalRes.groups[i][j];
-            cout << "{\"tasks_id\": \"" << to_string(idtask) << "\", ";
+            cout << "{\"task_id\": \"" << to_string(idtask) << "\", ";
             //cout << "\"NCCN\": \"" << taskList[idtask].machine_name << "\", ";
             cout << "\"device\": \"" << taskList[idtask].machine << "\", ";
             cout << "\"cycle_time\": " << taskList[idtask].worktime << "}";
@@ -857,7 +1040,7 @@ void printSolution(solution finalRes)
         totalWorkerSaved += stat.workerSaved;
         cout << "],\"level\": " << levelmax << ", ";
         cout << "\"total_time\": " << stat.TimeWork << ", ";
-        //cout << "\"workers\": " << stat.workers << ", ";
+        cout << "\"num_workers\": " << stat.workers << ", ";
         cout << "\"rj\": " << stat.Rj << ", ";
         //cout << " -- W: " << stat.workers << ", S: " << stat.workerSaved << ", T: " << stat.TimeWork <<", Nc: " << stat.Rj ;
         cout << "\"balance\": \"";
@@ -877,59 +1060,58 @@ void printSolution(solution finalRes)
     cout << "}" << endl;
 }
 
-void printJSON(solution finalRes)
-{
-    int totalWorkers = 0;
-    int totalWorkerSaved = 0;
-    int balancedGroups = 0;
-
-    for (int i = 0; i < (int)finalRes.groups.size(); i++)
-        sort(finalRes.groups[i].begin(), finalRes.groups[i].end());
-    sort(finalRes.groups.begin(), finalRes.groups.end());
-
-    cout << (int)finalRes.groups.size() << " groups" << endl;
-    for (int i = 0; i < (int)finalRes.groups.size(); i++)
-    {
-        cout << "Group " << i + 1 << ":";
-        for (int j = 0; j < (int)finalRes.groups[i].size(); j++)
-        {
-            cout << " " << finalRes.groups[i][j];
-        }
-
-        groupStat stat = calGroupStat(finalRes.groups[i]);
-        totalWorkers += stat.workers;
-        balancedGroups += stat.balanced;
-        totalWorkerSaved += stat.workerSaved;
-        cout << " -- W: " << stat.workers << ", S: " << stat.workerSaved << ", T: " << stat.TimeWork << ", Nc: " << stat.Rj;
-        if (stat.balanced == 1)
-            cout << " YES" << endl;
-        else
-            cout << " NO" << endl;
-    }
-
-    cout << totalWorkers << " workers, " << totalWorkerSaved << " saved, ";
-    cout << 100.0 * (double)balancedGroups / (double)finalRes.groups.size() << "%" << endl;
-
-    //line_arrangement(finalRes);
-}
-
 int main()
 {
-
+    srand(time(NULL));
     readInput();
-    //clock_t start = clock();
-    findSolution();
-    //cout << "\nPhuong an co so: \n";
-    //printSolution(finalRes);
-    tuneSolution();
-    //cout << "\nKet qua cuoi cung cua R = " << R << " : \n" ;
-    printSolution(finalRes);
-    //printJSON(finalRes);
-    //printJSON(finalRes);
-    //clock_t finish = clock();
-    //double duration = (double)(finish - start) / CLOCKS_PER_SEC;
-    //cout <<"\n\n\n";
-    //printf("Thoi gian thuc thi: %.2lf", duration);
-    //system("pause");
+    count_R();
+    double res_R = 0, res_w = 0, res_H = 0;
+    solution best_solution;
+    for (int i = 0; i < list_R.size(); i++)
+    {
+        calculate_R(list_R[i]);
+
+        ///* Early skip
+        int never_balance = 0;
+        for (int j = 1; j <= N; j++)
+        {
+            bool balance_possible = false;
+            for (int k = 0; k < list_group.size(); k++)
+            {
+                groupStat test = calGroupStat(list_group[k]);
+                if (!test.balanced)
+                    continue;
+                for (int t = 0; t < list_group[k].size(); t++)
+                {
+                    if (list_group[k][t] == j)
+                    {
+                        balance_possible = true;
+                        break;
+                    }
+                }
+                if (balance_possible)
+                    break;
+            }
+            if (!balance_possible)
+                never_balance++;
+        }
+        double upperbound_H = (double)(N - never_balance) / (double)(N - never_balance + (never_balance - 1) / 3 + 1);
+        if (upperbound_H < res_H + eps)
+            continue;
+
+        solution bestRes;
+        bestRes.workers = INF;
+        finalRes = SAforALBP1();
+        if (finalRes.balance > res_H + eps || (abs(finalRes.balance - res_H) < eps && finalRes.workers < res_w))
+        {
+            res_H = finalRes.balance;
+            res_R = R;
+            res_w = finalRes.workers;
+            best_solution = finalRes;
+        }
+    }
+    calculate_R(res_R);
+    printJSON(best_solution);
+
     return 0;
 }

@@ -56,8 +56,8 @@ api_problem_2.post("/api-problem_2", (req, res) => {
 	);
 
 	//Run C++ program
-	if (os.platform() == "win32") command = "cd controller && start Problem2.exe";
-	else command = "cd controller &&  ./Problem2";
+	if (os.platform() == "win32") command = "cd controller && start ALBP2-SA_greedy.exe";
+	else command = "cd controller &&  ./ALBP2-SA_greedy";
 	cmd.get(
 		command,
 		//Send output
@@ -70,8 +70,8 @@ api_problem_2.post("/api-problem_2", (req, res) => {
 			output_data = JSON.parse(text);
 			output_data.tasks = tasks;
 			let R = output_data.R;
-			output_data.rmin = parseInt(R) - (parseInt(R) * deviation) / 100;
-			output_data.rmax = parseInt(R) + (parseInt(R) * deviation) / 100;
+			output_data.rmin = parseFloat(R) - (parseFloat(R) * deviation) / 100;
+			output_data.rmax = parseFloat(R) + (parseFloat(R) * deviation) / 100;
 			text = JSON.stringify(output_data);
 			res.send(output_data);
 			console.log(

@@ -38,7 +38,7 @@ $(document).ready(function () {
 								$("#new_product").trigger("click");
 							} else {
 								product = { product_id: result };
-								sessionStorage.setItem("product", product);
+								sessionStorage.setItem("product", JSON.stringify(product));
 								toastr.success("Tạo sản phẩm mới thành công", "Success!");
 							}
 						},
@@ -97,7 +97,7 @@ $(document).ready(function () {
 			},
 		});
 		async function csv_to_html(result) {
-			// alert(JSON.stringify(result.data));
+			alert(JSON.stringify(result.data));
 			let product = {
 				product_id: $("#product_id").val(),
 				product_name: $("#product_name").val(),
@@ -106,9 +106,12 @@ $(document).ready(function () {
 			};
 			for (let i in result.data) {
 				if (i == 0 || i == result.data.length - 1) continue;
-				//alert(result.data[i]);
+				// alert(result.data[i]);
 				let row = result.data[i];
 				let cells = row.join(",").split(",");
+				if (cells[1] == '') {
+					continue
+				}
 				await new Promise((r) => setTimeout(r, 1)); //to get different task_id
 				product.tasks.push({
 					task_id: Date.now(),
@@ -134,9 +137,10 @@ $(document).ready(function () {
 					$(this).remove();
 				}
 			});
-			sessionStorage.setItem("product", product);
+			sessionStorage.setItem("product", JSON.stringify(product));
 			display_data(product);
 			display_graph();
+			toastr.success("Tải lên thành công", "Success!");
 		}
 	});
 
@@ -462,6 +466,9 @@ function display_graph() {
 		data.nodes.push({ id: task.task_id, label: task.task_order.toString() });
 	}
 
+	if (!precedence_relations) {
+		return
+	}
 	for (let pr in precedence_relations) {
 		let rela = precedence_relations[pr];
 		data.edges.push({
@@ -479,7 +486,7 @@ function display_graph() {
 		width: width,
 		height: height,
 
-		fitView: true,
+		fitView: false,
 		modes: {
 			default: ["drag-canvas", "zoom-canvas", "click-select"],
 		},
@@ -492,6 +499,13 @@ function display_graph() {
 		},
 		defaultNode: {
 			type: "sql",
+			size: 50,
+			labelCfg: {
+				style: {
+					fontSize: 30,
+					// ...           
+				}
+			}
 		},
 		defaultEdge: {
 			size: 1,
