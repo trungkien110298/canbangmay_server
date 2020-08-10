@@ -508,12 +508,12 @@ function display_graph() {
 			}
 		},
 		defaultEdge: {
-			size: 1,
-			color: "#e2e2e2",
+			size: 2,
+			color: "#FFFFF",
 			style: {
 				endArrow: {
 					path: "M 0,0 L 8,4 L 8,-4 Z",
-					fill: "#e2e2e2",
+					fill: "#FFFFF",
 				},
 			},
 		},
