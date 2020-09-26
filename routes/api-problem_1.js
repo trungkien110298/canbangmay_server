@@ -3,10 +3,11 @@ var fs = require("fs");
 var cmd = require("node-cmd");
 var os = require("os");
 var Product = require("../models/product");
+var auth = require('../controller/authController')
 
 var api_problem_1 = express.Router();
 
-api_problem_1.post("/api-problem_1", (req, res) => {
+api_problem_1.post("/api-problem_1", auth.isAuthenticated, (req, res) => {
 	console.log("/api-problem_1");
 	let product = req.body.product;
 	let problem = req.body.problem;

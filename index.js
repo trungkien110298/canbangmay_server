@@ -8,6 +8,8 @@ var os = require('os');
 var mongoose = require('mongoose');
 var config = require('./config/database');
 var favicon = require('express-favicon');
+var auth = require('./controller/authController')
+
 
 // Creat server app
 var app = express();
@@ -33,7 +35,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // ----------------- Router ---------------------------------- //
 
-app.get('/', function (req, res) {
+app.get('/', auth.isAuthenticated, function (req, res) {
+    return res.render('home.html');
+});
+
+app.get('/home', auth.isAuthenticated, function (req, res) {
     return res.render('home.html');
 });
 
@@ -41,8 +47,12 @@ app.get('/problem', function (req, res) {
     return res.render('problem.html');
 });
 
+
 var api_login = require('./routes/api-login');
 app.use(api_login);
+
+var api_signup = require('./routes/api-signup');
+app.use(api_signup);
 
 var api_get_product = require('./routes/api-get_product');
 app.use(api_get_product);
@@ -102,4 +112,3 @@ app.use(favicon(__dirname + '/public/images/favicon.ico'));
 app.listen(process.env.PORT || 3000, () => console.log('Server is listenning in port 3000'));
 module.exports = app;
 
-    

@@ -22,6 +22,7 @@ $(document).ready(function() {
 	$.ajax({
 		url: "/api-get_list_product",
 		contentType: "application/json",
+		headers: { "Authorization": localStorage.getItem('token') },
 		method: "GET",
 		success: function(data) {
 			var list_product = data.list_product;
@@ -48,6 +49,7 @@ $(document).ready(function() {
 					$.ajax({
 						url: "/api-get_product",
 						contentType: "application/json",
+						headers: { "Authorization": localStorage.getItem('token') },
 						method: "POST",
 						data: JSON.stringify({ product: { _id: product._id } }),
 						dataType: "json",
@@ -75,6 +77,7 @@ $(document).ready(function() {
 								$.ajax({
 									url: "/api-delete_product",
 									contentType: "application/json",
+									headers: { "Authorization": localStorage.getItem('token') },
 									method: "POST",
 									data: JSON.stringify({ product: { _id: product._id } }),
 									dataType: "json",
@@ -109,6 +112,7 @@ $(document).ready(function() {
 					$.ajax({
 						url: "/api-check_product_id",
 						contentType: "application/json",
+						headers: { "Authorization": localStorage.getItem('token') },
 						method: "POST",
 						data: JSON.stringify({ product_id: result }),
 						dataType: "json",

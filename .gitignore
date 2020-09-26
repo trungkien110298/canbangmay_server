@@ -4,3 +4,4 @@ controller/Problem1
 /temp
 bower_components
 *.exe
+.vscode

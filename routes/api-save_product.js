@@ -1,9 +1,10 @@
 var express = require("express");
 var Product = require("../models/product");
+var auth = require('../controller/authController')
 
 var api_save_product = express.Router();
 
-api_save_product.post("/api-save_product", (req, res) => {
+api_save_product.post("/api-save_product", auth.isAuthenticated, (req, res) => {
 	console.log("/api-save_product");
 	var product = req.body.product;
 	var product_id = product.product_id;
