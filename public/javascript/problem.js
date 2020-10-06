@@ -16,6 +16,11 @@ $(document).ready(function () {
 		showMethod: "fadeIn",
 		hideMethod: "fadeOut"
 	};
+	$.ajaxSetup({
+		headers: {
+			'Authorization': Cookies.get('token')
+		}
+	})
 	$("#optimize").click(function () {
 		var tab = $("#problem_tab li a.active").attr("href");
 		if (tab == "#tab-0") {
@@ -43,7 +48,7 @@ $(document).ready(function () {
 				url: "/api-problem_1",
 				contentType: "application/json",
 				method: "POST",
-				headers: { "Authorization": localStorage.getItem('token') },
+
 				data: JSON.stringify(req),
 				dataType: "json",
 				success: function (data) {
@@ -71,7 +76,7 @@ $(document).ready(function () {
 			$.ajax({
 				url: "/api-problem_2",
 				contentType: "application/json",
-				headers: { "Authorization": localStorage.getItem('token') },
+
 				method: "POST",
 				data: JSON.stringify(req),
 				dataType: "json",
@@ -102,7 +107,7 @@ $(document).ready(function () {
 			$.ajax({
 				url: "/api-problem_3",
 				contentType: "application/json",
-				headers: { "Authorization": localStorage.getItem('token') },
+
 				method: "POST",
 				data: JSON.stringify(req),
 				dataType: "json",

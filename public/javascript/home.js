@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
 	// Setting Toastr option
 	toastr.options = {
 		closeButton: false,
@@ -17,14 +17,17 @@ $(document).ready(function() {
 		showMethod: "fadeIn",
 		hideMethod: "fadeOut"
 	};
-
+	$.ajaxSetup({
+		headers: {
+			'Authorization': Cookies.get('token')
+		}
+	})
 	// Load list products
 	$.ajax({
 		url: "/api-get_list_product",
 		contentType: "application/json",
-		headers: { "Authorization": localStorage.getItem('token') },
 		method: "GET",
-		success: function(data) {
+		success: function (data) {
 			var list_product = data.list_product;
 			$("#num_product").html(list_product.length);
 
@@ -45,15 +48,15 @@ $(document).ready(function() {
 					class: "btn btn-primary btn-sm",
 					id: product._id
 				}).html("Chi tiết");
-				$(button).on("click", function() {
+				$(button).on("click", function () {
 					$.ajax({
 						url: "/api-get_product",
 						contentType: "application/json",
-						headers: { "Authorization": localStorage.getItem('token') },
+						
 						method: "POST",
 						data: JSON.stringify({ product: { _id: product._id } }),
 						dataType: "json",
-						success: function(product) {
+						success: function (product) {
 							sessionStorage.setItem("product", JSON.stringify(product));
 							window.location.href = "/api-get_product";
 						}
@@ -68,20 +71,20 @@ $(document).ready(function() {
 					class: "btn btn-danger btn-sm",
 					id: product._id
 				}).html("Xóa");
-				$(del_button).on("click", function() {
+				$(del_button).on("click", function () {
 					bootbox.confirm({
 						message: "Bạn có muốn xóa mã hàng này?",
 						size: "small",
-						callback: function(result) {
+						callback: function (result) {
 							if (result) {
 								$.ajax({
 									url: "/api-delete_product",
 									contentType: "application/json",
-									headers: { "Authorization": localStorage.getItem('token') },
+									
 									method: "POST",
 									data: JSON.stringify({ product: { _id: product._id } }),
 									dataType: "json",
-									success: function(data) {
+									success: function (data) {
 										if (parseInt(data.code) == 200) {
 											toastr.success("Xóa mã hàng thành công", "Success!");
 											let del_tr = document.getElementById("tr" + product._id);
@@ -102,21 +105,21 @@ $(document).ready(function() {
 		}
 	});
 
-	$("#new_product").click(function() {
+	$("#new_product").click(function () {
 		bootbox.prompt({
 			size: "small",
 			title: "Nhập mã hàng",
 			required: true,
-			callback: function(result) {
+			callback: function (result) {
 				if (result != null) {
 					$.ajax({
 						url: "/api-check_product_id",
 						contentType: "application/json",
-						headers: { "Authorization": localStorage.getItem('token') },
+						
 						method: "POST",
 						data: JSON.stringify({ product_id: result }),
 						dataType: "json",
-						success: function(data) {
+						success: function (data) {
 							//bootbox.alert(data)
 							if (data.code == "2") {
 								toastr.error("Mã hàng đã tồn tại", "Error!");
@@ -138,7 +141,7 @@ $(document).ready(function() {
 
 function renumber() {
 	var count = 0;
-	$.each($("#table_product tr td h4"), function() {
+	$.each($("#table_product tr td h4"), function () {
 		count++;
 		$(this).html(count);
 	});

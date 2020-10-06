@@ -57,8 +57,8 @@ api_problem_2.post("/api-problem_2", auth.isAuthenticated, (req, res) => {
 	);
 
 	//Run C++ program
-	if (os.platform() == "win32") command = "cd controller && start ALBP2-SA_greedy.exe";
-	else command = "cd controller &&  ./ALBP2-SA_greedy";
+	if (os.platform() == "win32") command = "cd optimization && start ALBP2-SA_greedy.exe";
+	else command = "cd optimization &&  ./ALBP2-SA_greedy";
 	cmd.get(
 		command,
 		//Send output

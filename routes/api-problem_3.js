@@ -57,8 +57,8 @@ api_problem_3.post("/api-problem_3", auth.isAuthenticated, (req, res) => {
 	);
 
 	//Run C++ program
-	if (os.platform() == "win32") command = "cd controller && start ALBPE-SA.exe";
-	else command = "cd controller &&  ./ALBPE-SA";
+	if (os.platform() == "win32") command = "cd optimization && start ALBPE-SA.exe";
+	else command = "cd optimization &&  ./ALBPE-SA";
 	cmd.get(
 		command,
 		//Send output

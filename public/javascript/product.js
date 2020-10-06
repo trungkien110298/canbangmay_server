@@ -29,7 +29,7 @@ $(document).ready(function () {
 					$.ajax({
 						url: "/api-check_product_id",
 						contentType: "application/json",
-						headers: { "Authorization": localStorage.getItem('token') },
+
 						method: "POST",
 						data: JSON.stringify({ product_id: result }),
 						dataType: "json",

@@ -16,8 +16,9 @@ $(document).ready(function () {
         showMethod: "fadeIn",
         hideMethod: "fadeOut",
     };
-
+    Cookies.remove('token');
     $("#login").click(function () {
+        Cookies.remove('token');
         let username = $("#username").val();
         let password = $("#password").val();
         let req = { username: username, password: password };
@@ -28,22 +29,30 @@ $(document).ready(function () {
             data: JSON.stringify(req),
             dataType: "json",
             success: function (data) {
-                // toastr.success("Đăng nhập thành công", "Success!");
                 if (data.message == "OK") {
-                    localStorage.setItem('token', data.data[0].token)
+                    toastr.success("Đăng nhập thành công", "Success!");
+                    Cookies.set('token', data.data[0].token)
+                    $.ajaxSetup({
+                        headers: {
+                            'Authorization': Cookies.get('token')
+                        }
+                    })
                     $.ajax({
                         url: "/home",
                         // contentType: "application/json",
                         method: "GET",
                         // dataType: "json",
-                        headers: { "Authorization": localStorage.getItem('token') },
+                        // 
                         success: function (data) {
                             var newDoc = document.open("text/html", "replace");
                             newDoc.write(data);
                             newDoc.close();
+                            // window.location.href = "/home";
                         }
                     })
                     //window.location.href = "/home";
+                } else {
+                    toastr.error("Tài khoản hoặc mật khẩu không đúng", "Error!");
                 }
             },
         });
