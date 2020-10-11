@@ -2,7 +2,7 @@ var express = require('express');
 var signup = express.Router();
 
 
-var User = require("../models/user");
+var User = require('../models/user');
 
 signup.post('/api-signup', function (req, res) {
     if (!req.body.username || !req.body.password) {

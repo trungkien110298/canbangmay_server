@@ -1,8 +1,8 @@
-var express = require("express");
+var express = require('express');
 var api_login = express.Router();
-var jwt = require("jsonwebtoken");
-var User = require("../models/user");
-var config = require("../config/database");
+var jwt = require('jsonwebtoken');
+var User = require('../models/user');
+var config = require('../config/database');
 
 api_login.get("/api-login", function (req, res) {
 	return res.render("login.html");

@@ -1,8 +1,8 @@
-var express = require("express");
-var fs = require("fs");
-var cmd = require("node-cmd");
-var os = require("os");
-var Product = require("../models/product");
+var express = require('express');
+var fs = require('fs');
+var cmd = require('node-cmd');
+var os = require('os');
+var Product = require('../models/product');
 var auth = require('../controller/authController')
 var api_get_product = express.Router();
 

@@ -1,5 +1,5 @@
-var express = require("express");
-var Product = require("../models/product");
+var express = require('express');
+var Product = require('../models/product');
 var auth = require('../controller/authController')
 
 var api_save_product = express.Router();

@@ -48,7 +48,6 @@ $(document).ready(function () {
 				url: "/api-problem_1",
 				contentType: "application/json",
 				method: "POST",
-
 				data: JSON.stringify(req),
 				dataType: "json",
 				success: function (data) {
@@ -80,7 +79,6 @@ $(document).ready(function () {
 				method: "POST",
 				data: JSON.stringify(req),
 				dataType: "json",
-				timeout: 720000,
 				success: function (data) {
 					toastr.remove()
 					toastr.success("Tối ưu thành công", "Success!");
@@ -111,7 +109,6 @@ $(document).ready(function () {
 				method: "POST",
 				data: JSON.stringify(req),
 				dataType: "json",
-				timeout: 720000,
 				success: function (data) {
 					toastr.remove()
 					toastr.success("Tối ưu thành công", "Success!");

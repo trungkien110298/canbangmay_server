@@ -43,6 +43,8 @@ struct group
     bool isStart = false;
     bool isEnd = false;
     vector<int> edge;
+    vector<int> revEdge;
+    vector<int> workerIndexList;
 };
 
 int N, NConst, DeltaPercent;
@@ -806,197 +808,221 @@ bool checkConnect(solution finalRes, int u, int v)
     return false;
 }
 
+vector<pair<int, int>> rankGroupWithIndex; // index and rank
+int rankGroup[MAXN + 1] = {};
+vector<pair<int, int>> lineOne, lineTwo; // index and label
+vector<pair<int, int>> edgeList;         //u and v
+
+void dfsRankingGroup(int u)
+{
+    for (int i = 0; i < groupList[u].revEdge.size(); i++)
+    {
+        int v = groupList[u].revEdge[i];
+        if (rankGroup[v] < rankGroup[u] + 1)
+        {
+            rankGroup[v] = rankGroup[u] + 1;
+            dfsRankingGroup(v);
+        }
+    }
+    return;
+}
+
+bool sortbysec(const pair<int, int> &a,
+               const pair<int, int> &b)
+{
+    return (a.second > b.second);
+}
+
 void line_arrangement(solution finalRes)
 {
-    int size_line = finalRes.groups.size();
-    int group_index = 0;
-    int degree[2 * MAXN + 5] = {};
-    for (int i = 0; i < size_line; i++)
-    {
-        groupStat stat = calGroupStat(finalRes.groups[i]);
-        for (int j = 0; j < stat.workers; j++)
-        {
-            group_index++;
-            groupList[group_index].worker = stat.workers;
-            groupList[group_index].index = i;
-            if (j == 0)
-            {
-                groupList[group_index].isStart = true;
-            }
-            if (j == stat.workers - 1)
-            {
-                groupList[group_index].isEnd = true;
-            }
-        }
+    int numGroup = finalRes.groups.size();
+    int groupIndexOfTask[N + 1];
+    groupStat groupStatList[numGroup + 1];
+    int edgeMatrix[numGroup + 1][numGroup + 1] = {};
 
-        if (stat.workers == 2)
+    for (int i = 0; i < numGroup; i++)
+    {
+        groupStatList[i + 1] = calGroupStat(finalRes.groups[i]);
+        for (int j = 0; j < finalRes.groups[i].size(); j++)
         {
-            groupList[group_index - 1].edge.push_back(group_index);
-            degree[group_index]++;
-        }
-        if (stat.workers == 3)
-        {
-            groupList[group_index - 2].edge.push_back(group_index - 1);
-            degree[group_index - 1]++;
-            groupList[group_index - 1].edge.push_back(group_index);
-            degree[group_index]++;
+            groupIndexOfTask[finalRes.groups[i][j]] = i + 1;
         }
     }
 
-    for (int i = 1; i <= group_index; i++)
+    for (int i = 0; i < numGroup; i++)
     {
-        if (groupList[i].isEnd)
+        for (int j = 0; j < finalRes.groups[i].size(); j++)
         {
-            int u = groupList[i].index;
-            for (int j = 1; j <= group_index; j++)
+            int t = finalRes.groups[i][j];
+            for (int e = 0; e < taskList[t].originEdge.size(); e++)
             {
-                if (groupList[j].isEnd)
+                int g = groupIndexOfTask[taskList[t].originEdge[e]];
+
+                // Avoid duplicate edge
+                if (i + 1 != g && edgeMatrix[i + 1][g] == 0 && edgeMatrix[g][i + 1] == 0)
                 {
-                    int v = groupList[j].index;
-                    if (u != v && checkConnect(finalRes, u, v))
-                    {
-                        groupList[i].edge.push_back(j);
-                        degree[j]++;
-                    }
-                }
-                if ((!groupList[j].isStart && !groupList[j].isEnd))
-                {
-                    int v = groupList[j].index;
-                    if (u != v && checkConnect(finalRes, u, v))
-                    {
-                        groupList[i].edge.push_back(j);
-                        degree[j]++;
-                    }
-                }
-            }
-        }
-        if (groupList[i].isStart)
-        {
-            int u = groupList[i].index;
-            for (int j = 1; j <= group_index; j++)
-            {
-                if (groupList[j].isStart)
-                {
-                    if (groupList[i].worker > 1 || groupList[j].worker > 1)
-                    {
-                        int v = groupList[j].index;
-                        if (u != v && checkConnect(finalRes, u, v))
-                        {
-                            groupList[i].edge.push_back(j);
-                            degree[j]++;
-                        }
-                    }
-                }
-                if (groupList[i].worker != 1 && (!groupList[j].isStart && !groupList[j].isEnd))
-                {
-                    int v = groupList[j].index;
-                    if (u != v && checkConnect(finalRes, u, v))
-                    {
-                        groupList[i].edge.push_back(j);
-                        degree[j]++;
-                    }
-                }
-            }
-        }
-        if (!groupList[i].isStart && !groupList[i].isEnd)
-        {
-            int u = groupList[i].index;
-            for (int j = 1; j <= group_index; j++)
-            {
-                if ((groupList[j].worker != 3) || (!groupList[j].isStart && !groupList[j].isEnd))
-                {
-                    int v = groupList[j].index;
-                    if (u != v && checkConnect(finalRes, u, v))
-                    {
-                        groupList[i].edge.push_back(j);
-                        degree[j]++;
-                    }
+                    groupList[i + 1].edge.push_back(g);
+                    groupList[g].revEdge.push_back(i + 1);
+                    edgeMatrix[i + 1][g] = 1;
+                    edgeMatrix[g][i + 1] = 1;
                 }
             }
         }
     }
 
-    queue<int> arrange;
-    int mark[2 * MAXN + 5] = {};
+    int lastGroup;
+    for (int i = 1; i <= numGroup; i++)
+        if (groupList[i].edge.size() == 0)
+            lastGroup = i;
 
-    for (int i = 1; i <= group_index; i++)
+    rankGroup[lastGroup] = 1;
+    dfsRankingGroup(lastGroup);
+    for (int i = 1; i <= numGroup; i++)
     {
-        /*
-        cout <<"\n" << i <<" " << groupList[i].index<< " is Start: " << groupList[i].isStart << " is End: " << groupList[i].isEnd << " degree: " << degree[i] << endl ;
-        for (int j = 0; j < groupList[i].edge.size(); j++){
-            cout << groupList[i].edge[j] << " ";
-        }
-        cout << endl;
-        */
-        if (degree[i] == 0)
+        rankGroupWithIndex.push_back(make_pair(i, rankGroup[i]));
+    }
+
+    sort(rankGroupWithIndex.begin(), rankGroupWithIndex.end(), sortbysec);
+
+    int workerIndexCount = 1;
+    for (int i = 0; i < numGroup; i++)
+    {
+        int groupIndex = rankGroupWithIndex[i].first;
+        int numWorkers = groupStatList[groupIndex].workers;
+        if (numWorkers == 1)
         {
-            arrange.push(i);
-            mark[i] = 1;
+            if (lineOne.size() <= lineTwo.size())
+            {
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineOne.push_back(make_pair(workerIndexCount++, groupIndex));
+            }
+            else
+            {
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineTwo.push_back(make_pair(workerIndexCount++, groupIndex));
+            }
+        }
+        if (numWorkers == 2)
+        {
+            if (lineOne.size() == lineTwo.size())
+            {
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineOne.push_back(make_pair(workerIndexCount++, groupIndex));
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineTwo.push_back(make_pair(workerIndexCount++, groupIndex));
+            }
+            else if (lineOne.size() < lineTwo.size())
+            {
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineOne.push_back(make_pair(workerIndexCount++, groupIndex));
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineOne.push_back(make_pair(workerIndexCount++, groupIndex));
+            }
+            else
+            {
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineTwo.push_back(make_pair(workerIndexCount++, groupIndex));
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineTwo.push_back(make_pair(workerIndexCount++, groupIndex));
+            }
+        }
+        if (numWorkers == 3)
+        {
+            if (lineOne.size() <= lineTwo.size())
+            {
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineOne.push_back(make_pair(workerIndexCount++, groupIndex));
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineOne.push_back(make_pair(workerIndexCount++, groupIndex));
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineTwo.push_back(make_pair(workerIndexCount++, groupIndex));
+            }
+            else
+            {
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineTwo.push_back(make_pair(workerIndexCount++, groupIndex));
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineOne.push_back(make_pair(workerIndexCount++, groupIndex));
+                groupList[groupIndex].workerIndexList.push_back(workerIndexCount);
+                lineTwo.push_back(make_pair(workerIndexCount++, groupIndex));
+            }
         }
     }
 
-    int results[300] = {};
-
-    int dem = 0;
-    while (!arrange.empty())
+    for (int i = 1; i <= numGroup; i++)
     {
-        int top = arrange.front();
-        arrange.pop();
-        dem++;
-        results[dem] = top;
-        //cout << groupList[top].index + 1;
-        //if (dem % 2 == 0) cout << " ";
-        //else cout << endl;
-        mark[top] = 1;
-        for (int i = 0; i < groupList[top].edge.size(); i++)
+        for (int j = 0; j < groupList[i].edge.size(); j++)
         {
-            int v = groupList[top].edge[i];
-            if (!mark[v])
-            {
-                degree[v]--;
-                if (degree[v] == 0)
-                    arrange.push(v);
+            int u = i, v = groupList[i].edge[j];
+            int numWorkerU = groupStatList[u].workers;
+            int numWorkerV = groupStatList[v].workers;
+            if (numWorkerU == numWorkerV)
+            { // 1vs1 2vs2 3v3
+                for (int w = 0; w < numWorkerU; w++)
+                {
+                    edgeList.push_back(make_pair(groupList[u].workerIndexList[w], groupList[v].workerIndexList[w]));
+                }
+            }
+            else if (numWorkerU == 1)
+            { // 1vs2 1vs3
+                for (int w = 0; w < numWorkerV; w++)
+                {
+                    edgeList.push_back(make_pair(groupList[u].workerIndexList[0], groupList[v].workerIndexList[w]));
+                }
+            }
+            else if (numWorkerV == 1)
+            { // 2vs1 3vs1
+                for (int w = 0; w < numWorkerU; w++)
+                {
+                    edgeList.push_back(make_pair(groupList[u].workerIndexList[w], groupList[v].workerIndexList[0]));
+                }
+            }
+            else if (numWorkerU == 2)
+            { // 2vs3
+                for (int w = 0; w < numWorkerU; w++)
+                {
+                    edgeList.push_back(make_pair(groupList[u].workerIndexList[w], groupList[v].workerIndexList[w]));
+                    edgeList.push_back(make_pair(groupList[u].workerIndexList[w], groupList[v].workerIndexList[2]));
+                }
+            }
+            else
+            { // 3vs2
+                for (int w = 0; w < numWorkerV; w++)
+                {
+                    edgeList.push_back(make_pair(groupList[u].workerIndexList[w], groupList[v].workerIndexList[w]));
+                    edgeList.push_back(make_pair(groupList[u].workerIndexList[2], groupList[v].workerIndexList[w]));
+                }
             }
         }
     }
 
     cout << "\"line_1\":[";
-    for (int i = 1; i <= dem; i += 2)
+    for (int i = 0; i < lineOne.size(); i++)
     {
-        cout << "{\"id\": " << results[i] << ",";
-        cout << "\"label\": " << groupList[results[i]].index + 1 << "}";
-        if (i < dem - 1)
+        cout << "{\"id\": " << lineOne[i].first << ",";
+        cout << "\"label\": " << lineOne[i].second << "}";
+        if (i < lineOne.size() - 1)
             cout << ",";
     }
     cout << "], ";
     cout << "\"line_2\":[";
-    for (int i = 2; i <= dem; i += 2)
+    for (int i = 0; i < lineTwo.size(); i++)
     {
-        cout << "{\"id\": " << results[i] << ",";
-        cout << "\"label\": " << groupList[results[i]].index + 1 << "}";
-        if (i < dem - 1)
+        cout << "{\"id\": " << lineTwo[i].first << ",";
+        cout << "\"label\": " << lineTwo[i].second << "}";
+        if (i < lineTwo.size() - 1)
             cout << ",";
     }
     cout << "], ";
     cout << "\"edges\":[";
-    int demphay = 0;
-    for (int i = 1; i <= group_index; i++)
-    {
 
-        for (int j = 0; j < groupList[i].edge.size(); j++)
-        {
-            if (groupList[i].index != groupList[groupList[i].edge[j]].index)
-            {
-                if (demphay != 0)
-                    cout << ", ";
-                demphay++;
-                cout << "{\"u\": " << i << ",";
-                cout << "\"v\": " << groupList[i].edge[j];
-                //if (j < groupList[i].edge.size() - 1) cout << " ,";
-                cout << "}";
-                //if (i < group_index || j < groupList[i].edge.size() - 1) cout << ",";
-            }
-        }
+    for (int i = 0; i < edgeList.size(); i++)
+    {
+        cout << "{\"u\": " << edgeList[i].first << ",";
+        cout << "\"v\": " << edgeList[i].second;
+        cout << "}";
+        if (i < edgeList.size() - 1)
+            cout << ", ";
     }
     cout << "]";
 }

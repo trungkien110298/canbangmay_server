@@ -1,6 +1,6 @@
-var express = require("express");
-var mongoose = require("mongoose");
-var Product = require("../models/product");
+var express = require('express');
+var mongoose = require('mongoose');
+var Product = require('../models/product');
 var auth = require('../controller/authController')
 
 

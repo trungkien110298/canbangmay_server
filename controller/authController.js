@@ -1,7 +1,7 @@
 var User = require('../models/user');
 var config = require('../config/database');
 var jwt = require('jsonwebtoken');
-var BlackList = require("../models/blackList");
+var BlackList = require('../models/blackList');
 
 
 exports.isAuthenticated = function (req, res, next) {

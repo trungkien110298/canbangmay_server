@@ -60,8 +60,8 @@ group groupList[3 * MAXN + 5];
 
 void readInput()
 {
-    freopen("temp/input_p1.txt", "r", stdin);
-    freopen("temp/output_p1.json", "w", stdout);
+    freopen("../temp/input_p1.txt", "r", stdin);
+    freopen("../temp/output_p1.json", "w", stdout);
 
     cin >> N >> R >> DeltaPercent;
     Delta = (double)DeltaPercent / 100.0;
