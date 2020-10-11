@@ -384,20 +384,6 @@ function display_graph(group_data) {
 		container: "assembly_line-graph",
 		width,
 		height,
-		//         layout: {
-		//             type: 'grid'
-		// //             center: [200, 200], // The center of the graph by default
-		// //             linkDistance: 50, // The edge length
-		// //             preventOverlap: true, // nodeSize or size in data is required for preventOverlap: true
-		// //             nodeSize: 30,
-		// //             sweep: 10,
-		// //             equidistant: false,
-		// //             startAngle: 0,
-		// //             clockwise: false,
-		// //             maxLevelDiff: 10,
-		// //             sortBy: 'degree',
-		// //             workerEnabled: true, // Whether to activate web-worker
-		//         },
 		pixelRatio: 2,
 		defaultNode: {
 			shape: "sql"
@@ -440,6 +426,9 @@ function display_graph(group_data) {
 	});
 	graph.data(data);
 	graph.render();
+	// let node = graph.findById('1');
+	// alert(JSON.stringify(node.style))
+
 }
 
 function display_chart(data_points, data_points_rmax, data_points_rmin) {
