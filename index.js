@@ -8,7 +8,7 @@ var os = require('os');
 var mongoose = require('mongoose');
 var config = require('./config/database');
 var favicon = require('express-favicon');
-var auth = require('./controller/authController')
+var getAuth = require('./controller/getAuthController')
 
 
 // Creat server app
@@ -35,11 +35,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // ----------------- Router ---------------------------------- //
 
-app.get('/', auth.isAuthenticated, function (req, res) {
+app.get('/', getAuth.isAuthenticated, function (req, res) {
     return res.render('home.html');
 });
 
-app.get('/home', auth.isAuthenticated, function (req, res) {
+app.get('/home', getAuth.isAuthenticated, function (req, res) {
     return res.render('home.html');
 });
 

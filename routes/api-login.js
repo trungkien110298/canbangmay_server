@@ -21,7 +21,7 @@ api_login.post("/api-login", function (req, res) {
 				if (isMatch && !err) {
 					// if user is found and password is right create a token
 					var payload = { phonenumber: user.phonenumber };
-					var token = jwt.sign(payload, config.secret, { expiresIn: "1h" });
+					var token = jwt.sign(payload, config.secret, { expiresIn: "3h" });
 					// return the information including token as JSON
 					res.json({
 						code: 1000,

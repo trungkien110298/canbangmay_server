@@ -22,6 +22,23 @@ $(document).ready(function () {
 			'Authorization': Cookies.get('token')
 		}
 	})
+
+	$("#home").on("click", function () {
+		$.ajax({
+			url: "/home",
+			// contentType: "application/json",
+			method: "GET",
+			// dataType: "json",
+			// 
+			success: function (data) {
+				var newDoc = document.open("text/html", "replace");
+				newDoc.write(data);
+				newDoc.close();
+				// window.location.href = "/home";
+			}
+		})
+	});
+
 	// Load list products
 	$.ajax({
 		url: "/api-get_list_product",
@@ -120,7 +137,6 @@ $(document).ready(function () {
 						data: JSON.stringify({ product_id: result }),
 						dataType: "json",
 						success: function (data) {
-							//bootbox.alert(data)
 							if (data.code == "2") {
 								toastr.error("Mã hàng đã tồn tại", "Error!");
 								$("#new_product").trigger("click");
@@ -129,7 +145,6 @@ $(document).ready(function () {
 								sessionStorage.setItem("product", JSON.stringify(product));
 								toastr.success("Tạo mã hàng mới thành công", "Success!");
 								window.location.href = "/api-get_product";
-								// bootbox.alert("Lưu thành công");
 							}
 						}
 					});

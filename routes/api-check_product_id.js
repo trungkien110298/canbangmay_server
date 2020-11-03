@@ -1,10 +1,10 @@
 var express = require('express');
 var Product = require('../models/product');
-var auth = require('../controller/authController')
+var postAuth = require('../controller/postAuthController')
 
 var api_check_product_id = express.Router();
 
-api_check_product_id.post("/api-check_product_id", auth.isAuthenticated, (req, res) => {
+api_check_product_id.post("/api-check_product_id", postAuth.isAuthenticated, (req, res) => {
 	console.log("/api-check_product_id");
 	var product_id = req.body.product_id;
 	Product.findOne({ product_id: product_id }, function(err, product) {

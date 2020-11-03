@@ -21,6 +21,23 @@ $(document).ready(function () {
 			'Authorization': Cookies.get('token')
 		}
 	})
+
+	$("#home").on("click", function () {
+		$.ajax({
+			url: "/home",
+			// contentType: "application/json",
+			method: "GET",
+			// dataType: "json",
+			// 
+			success: function (data) {
+				var newDoc = document.open("text/html", "replace");
+				newDoc.write(data);
+				newDoc.close();
+				// window.location.href = "/home";
+			}
+		})
+	});
+
 	$("#optimize").click(function () {
 		var tab = $("#problem_tab li a.active").attr("href");
 		if (tab == "#tab-0") {
@@ -142,8 +159,6 @@ function display_result(data, problem) {
 
 
 
-	// alert(JSON.stringify(data))
-	// alert(JSON.stringify(tasks))
 	let total_time = 0
 	for (let i in tasks) {
 		total_time += tasks[i].time
@@ -217,7 +232,6 @@ function display_result(data, problem) {
 			);
 			td_task_id.appendTo(rows[t]);
 
-			// alert(task.task)	
 			let td_task = $("<td></td>").append(
 				$("<p></p>", { class: "text-center" }).html(
 					tasks[parseInt(task.task_id) - 1].name
@@ -427,7 +441,6 @@ function display_graph(group_data) {
 	graph.data(data);
 	graph.render();
 	// let node = graph.findById('1');
-	// alert(JSON.stringify(node.style))
 
 }
 

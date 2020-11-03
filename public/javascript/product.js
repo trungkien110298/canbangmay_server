@@ -17,6 +17,11 @@ $(document).ready(function () {
 		hideMethod: "fadeOut",
 	};
 
+	$.ajaxSetup({
+		headers: {
+			'Authorization': Cookies.get('token')
+		}
+	})
 	var product = JSON.parse(sessionStorage.getItem("product"));
 	if (!product) {
 		//TODO: product
@@ -56,6 +61,22 @@ $(document).ready(function () {
 		display_data(product);
 	}
 
+	$("#home").on("click", function () {
+		$.ajax({
+			url: "/home",
+			// contentType: "application/json",
+			method: "GET",
+			// dataType: "json",
+			// 
+			success: function (data) {
+				var newDoc = document.open("text/html", "replace");
+				newDoc.write(data);
+				newDoc.close();
+				// window.location.replace("/home");
+			}
+		})
+	});
+
 	$("#add_task").on("click", function () {
 		add_task_row();
 	});
@@ -64,19 +85,23 @@ $(document).ready(function () {
 		add_relation_row();
 	});
 
-	$("#save").click(function () {
+	$("#save").on("click", function () {
 		let product = get_data();
 		sessionStorage.setItem("product", JSON.stringify(product));
 		let req = { product: product };
 		$.ajax({
 			url: "/api-save_product",
 			contentType: "application/json",
-			headers: { "Authorization": localStorage.getItem('token') },
 			method: "POST",
 			data: JSON.stringify(req),
 			dataType: "json",
 			success: function (data) {
-				toastr.success("Lưu sản phẩm thành công", "Success!");
+				if (data.code == 9000) {
+					window.location.replace("/api-login")
+				}
+				else {
+					toastr.success("Lưu sản phẩm thành công", "Success!");
+				}
 			},
 		});
 	});
@@ -99,7 +124,7 @@ $(document).ready(function () {
 			},
 		});
 		async function csv_to_html(result) {
-			alert(JSON.stringify(result.data));
+
 			let product = {
 				product_id: $("#product_id").val(),
 				product_name: $("#product_name").val(),
@@ -108,7 +133,6 @@ $(document).ready(function () {
 			};
 			for (let i in result.data) {
 				if (i == 0 || i == result.data.length - 1) continue;
-				// alert(result.data[i]);
 				let row = result.data[i];
 				let cells = row.join(",").split(",");
 				if (cells[1] == '') {
@@ -133,8 +157,6 @@ $(document).ready(function () {
 				}
 			});
 			$.each($("#precedence_relations tbody tr"), function (index) {
-				// //alert($(this).attr('order'))
-				// alert(index)
 				if (index != 0 && $("#precedence_relations tbody tr").length > 2) {
 					$(this).remove();
 				}
@@ -206,7 +228,7 @@ function add_task_row() {
 	let task_id = Date.now();
 	var tr = $("<tr></tr>", {
 		task_id: task_id,
-		order: new_task_order,
+		task_order: new_task_order,
 	});
 
 	// loop through each td and create new elements with name of new_order
@@ -306,8 +328,8 @@ function display_data(product) {
 		}
 
 		$("#tasks tbody tr").each(function () {
-			if (parseInt($(this).attr("order")) > 0) {
-				let i = parseInt($(this).attr("order")) - 1;
+			if (parseInt($(this).attr("task_order")) > 0) {
+				let i = parseInt($(this).attr("task_order")) - 1;
 
 				$(this).attr("task_id", tasks[i].task_id);
 				$(this).find(':input[name = "name"]').val(tasks[i].name);
@@ -350,7 +372,7 @@ function get_data() {
 	let product = { tasks: [], precedence_relations: [] };
 
 	$("#tasks tbody tr").each(function () {
-		if (parseInt($(this).attr("order")) > 0) {
+		if (parseInt($(this).attr("task_order")) > 0) {
 			let task_id = $(this).attr("task_id");
 			let task_order = $(this).find("h6").html();
 			let name = $(this).find(':input[name = "name"]').val();
