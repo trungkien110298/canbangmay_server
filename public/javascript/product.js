@@ -145,7 +145,7 @@ $(document).ready(function () {
 					name: cells[1],
 					description: cells[2],
 					device: cells[3],
-					time: parseInt(cells[4]),
+					time: parseFloat(cells[4]),
 					level: parseInt(cells[5]),
 					task_type: parseInt(cells[6]),
 				});
@@ -378,7 +378,7 @@ function get_data() {
 			let name = $(this).find(':input[name = "name"]').val();
 			let description = $(this).find(':input[name = "description"]').val();
 			let device = $(this).find(':input[name = "device"]').val();
-			let time = parseInt($(this).find(':input[name = "time"]').val());
+			let time = parseFloat($(this).find(':input[name = "time"]').val());
 			let task_type = parseInt(
 				$(this).find(':input[name = "task_type"]').val()
 			);

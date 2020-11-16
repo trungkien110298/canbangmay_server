@@ -41,7 +41,7 @@ $(document).ready(function () {
 	$("#optimize").click(function () {
 		var tab = $("#problem_tab li a.active").attr("href");
 		if (tab == "#tab-0") {
-			let time = parseInt($("#p1_time").val()) * 3600;
+			let time = parseFloat($("#p1_time").val()) * 3600;
 			let deviation = $("#p1_deviation").val();
 			let wattage = $("#p1_wattage").val();
 			let cycle_time = $("#p1_cycle_time").val();
@@ -103,7 +103,7 @@ $(document).ready(function () {
 				}
 			});
 		} else {
-			let time = parseInt($("#p3_time").val()) * 3600;
+			let time = parseFloat($("#p3_time").val()) * 3600;
 			let deviation = $("#p3_deviation").val();
 			let product = JSON.parse(sessionStorage.getItem("product"));
 
